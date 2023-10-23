@@ -1,3 +1,4 @@
 bin
+bin/test_sample1.py
 bin/*
 env
