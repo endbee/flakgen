@@ -9,6 +9,7 @@ def generate_sum_function():
         []
     )
 
+
 def generate_sum_test():
     return ast.FunctionDef(
         'test_sum',
