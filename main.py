@@ -1,29 +1,40 @@
-from generation.random_api import generate_randapi_flaky_summation_test_and_function_pair
+import generation.random_api as random_api
 import os
 import astor
 
+
 def main():
-    flakiness_rel = 0.5
+    flakiness_prob = 0.5
     summation_depth = 5
+    multiplication_depth = 5
 
     flakiness_category_generators = {
-        'randapi_summation': generate_randapi_flaky_summation_test_and_function_pair
+        'random_api': {
+            'summation': random_api.SummationGenerator(summation_depth, flakiness_prob),
+            'multiplication': random_api.MultiplicationGenerator(multiplication_depth, flakiness_prob)
+        }
     }
 
-    for key in flakiness_category_generators:
-        if key == 'randapi_summation':
-            func_tree, test_tree = flakiness_category_generators[key](summation_depth, flakiness_rel)
+    if not os.path.exists('bin'):
+        os.makedirs('bin/src')
+        os.makedirs('bin/src/test')
 
-        if not os.path.exists('bin'):
-            os.makedirs('bin')
+    for category in flakiness_category_generators:
+        if category == 'random_api':
+            f = open("bin/random_api_test.py", "w")
 
-        f = open("bin/test_sample1.py", "w")
-        f.write(astor.to_source(func_tree))
-        f.write("\n")
-        f.write(astor.to_source(test_tree))
+            for kind in flakiness_category_generators[category]:
+                generator = flakiness_category_generators[category][kind]
+                func_tree = generator.generate_flaky_function_tree()
+                test_tree = generator.generate_test_tree()
+
+                f.write(astor.to_source(test_tree))
+                f.write("\n")
+                f.write(astor.to_source(func_tree))
+                f.write("\n")
         f.close()
 
-    stream = os.popen('cd bin && pytest && cd ..')
+    stream = os.popen('cd bin && pytest && cd ../..')
     output = stream.read()
     print(output)
 

@@ -1,59 +1,91 @@
 import ast
+from .generator import Generator
 
 
-def generate_flaky_summation(summation_depth, flaky_prob):
-    epsilion = ast.Constant(0.1)
-    zero = ast.Constant(0)
+class RandomApiGenerator(Generator):
 
-    if_expr = ast.IfExp(
-        generate_compare_eq_expression(generate_random_float_number_expression(), ast.Constant(flaky_prob)),
-        zero,
-        epsilion
-    )
-
-    print(ast.dump(if_expr))
-
-    summation_expression = ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=if_expr))
-
-    for i in range(summation_depth-1):
-        summation_expression = \
-            ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=summation_expression))
-
-    return ast.FunctionDef(
-        'flaky_summation',
-        ast.arguments([], [ast.arg(arg='summand')], defaults=[]),
-        [ast.Import(names=[ast.alias('numpy')]), ast.Return(summation_expression)],
-        []
-    )
+    @staticmethod
+    def generate_random_float_number_expression():
+        return ast.Call(ast.Attribute(value=ast.Name(id='numpy.random'), attr='random'), args=[], keywords=[])
 
 
-def generate_summation_test(summation_depth):
-    return ast.FunctionDef(
-        'test_sum',
-        ast.arguments([], [], defaults=[]),
-        [generate_assert_equality_expression(
-            ast.Call(func=ast.Name('flaky_summation'), args=[ast.Constant(5)], keywords=[]),
-            ast.Constant(summation_depth*5)
-        )],
-        []
-    )
+class SummationGenerator(RandomApiGenerator):
+    def __init__(self, summation_depth, flakiness_prob):
+        self.summation_depth = summation_depth
+        self.flakiness_prob = flakiness_prob
 
+    def generate_flaky_function_tree(self):
+        epsilon = ast.Constant(0.1)
+        zero = ast.Constant(0)
 
-def generate_assert_equality_expression(left, right):
-    return ast.Assert(
-        ast.Expression(
-            ast.BinOp(left=left, op=ast.Eq(), right=right)
+        if_expr = ast.IfExp(
+            self.generate_compare_eq_expression(self.generate_random_float_number_expression(), ast.Constant(self.flakiness_prob)),
+            zero,
+            epsilon
         )
-    )
+
+        summation_expression = ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=if_expr))
+
+        for i in range(self.summation_depth-1):
+            summation_expression = \
+                ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=summation_expression))
+
+        return ast.FunctionDef(
+            'flaky_summation',
+            ast.arguments([], [ast.arg(arg='summand')], defaults=[]),
+            [ast.Import(names=[ast.alias('numpy')]), ast.Return(summation_expression)],
+            []
+        )
+
+    def generate_test_tree(self):
+        return ast.FunctionDef(
+            'test_sum',
+            ast.arguments([], [], defaults=[]),
+            [self.generate_assert_equality_expression(
+                ast.Call(func=ast.Name('flaky_summation'), args=[ast.Constant(5)], keywords=[]),
+                ast.Constant(self.summation_depth*5)
+            )],
+            []
+        )
 
 
-def generate_compare_eq_expression(left, comparator):
-    return ast.Compare(left=left, keywords=[], ops=[ast.Lt()], comparators=[comparator])
+class MultiplicationGenerator(RandomApiGenerator):
 
+    def __init__(self, multiplication_depth, flakiness_prob):
+        self.multiplication_depth = multiplication_depth
+        self.flakiness_prob = flakiness_prob
 
-def generate_random_float_number_expression():
-    return ast.Call(ast.Attribute(value=ast.Name(id='numpy.random'), attr='random'), args=[], keywords=[])
+    def generate_flaky_function_tree(self):
+        minus_one = ast.Constant(-1)
+        one = ast.Constant(1)
 
+        if_expr = ast.IfExp(
+            self.generate_compare_eq_expression(self.generate_random_float_number_expression(),
+                                                ast.Constant(self.flakiness_prob)),
+            one,
+            minus_one
+        )
 
-def generate_randapi_flaky_summation_test_and_function_pair(summation_depth, flaky_prob):
-    return generate_flaky_summation(summation_depth, flaky_prob), generate_summation_test(summation_depth)
+        multiplication_expression = ast.Expression(ast.BinOp(left=ast.Name(id='multiplicand'), op=ast.Mult(), right=if_expr))
+
+        for i in range(self.multiplication_depth - 1):
+            multiplication_expression = \
+                ast.Expression(ast.BinOp(left=ast.Name(id='multiplicand'), op=ast.Mult(), right=multiplication_expression))
+
+        return ast.FunctionDef(
+            'flaky_multiplication',
+            ast.arguments([], [ast.arg(arg='multiplicand')], defaults=[]),
+            [ast.Import(names=[ast.alias('numpy')]), ast.Return(multiplication_expression)],
+            []
+        )
+
+    def generate_test_tree(self):
+        return ast.FunctionDef(
+            'test_multiplication',
+            ast.arguments([], [], defaults=[]),
+            [self.generate_assert_equality_expression(
+                ast.Call(func=ast.Name('flaky_multiplication'), args=[ast.Constant(5)], keywords=[]),
+                ast.Constant(self.multiplication_depth ** 5)
+            )],
+            []
+        )
