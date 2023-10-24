@@ -55,5 +55,5 @@ def generate_random_float_number_expression():
     return ast.Call(ast.Attribute(value=ast.Name(id='numpy.random'), attr='random'), args=[], keywords=[])
 
 
-def generate_flaky_test_and_function_pair(summation_depth, flaky_prob):
+def generate_flaky_summation_test_and_function_pair(summation_depth, flaky_prob):
     return generate_flaky_summation(summation_depth, flaky_prob), generate_summation_test(summation_depth)

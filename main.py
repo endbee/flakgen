@@ -1,10 +1,10 @@
-from generation.random_api import generate_flaky_test_and_function_pair
+from generation.random_api import generate_flaky_summation_test_and_function_pair
 import os
 import astor
 
 def main():
 
-    func_tree, test_tree = generate_flaky_test_and_function_pair(5, 0.5)
+    func_tree, test_tree = generate_flaky_summation_test_and_function_pair(5, 0.5)
 
     if not os.path.exists('bin'):
         os.makedirs('bin')
