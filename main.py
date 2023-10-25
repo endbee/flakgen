@@ -1,21 +1,16 @@
 import os
 import astor
 
-import generation.random_api as random_api
+from generation.generator_builder import GeneratorBuilder
 from file_writing.test_file_writer import TestFileWriter
 from file_writing.function_file_writer import FunctionFileWriter
 
-def main():
-    flakiness_prob = 0.5
-    summation_depth = 5
-    multiplication_depth = 5
 
-    flakiness_category_generators = {
-        'random_api': {
-            'summation': random_api.SummationGenerator(summation_depth, flakiness_prob),
-            'multiplication': random_api.MultiplicationGenerator(multiplication_depth, flakiness_prob)
-        }
-    }
+def main():
+    config_file_name = "config.json"
+    generator_builder = GeneratorBuilder(config_file_name)
+
+    flakiness_category_generators = generator_builder.build_generator_dict()
 
     if not os.path.exists('testsuite'):
         os.makedirs('testsuite')

@@ -1,0 +1,12 @@
+{
+  "random_api": {
+    "summation": {
+      "summation_depth":  5,
+      "flakiness_prob":  0.5
+    },
+    "multiplication": {
+      "multiplication_depth":  5,
+      "flakiness_prob":  0.5
+    }
+  }
+}
