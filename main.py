@@ -15,13 +15,12 @@ def main():
         }
     }
 
-    if not os.path.exists('bin'):
-        os.makedirs('bin/src')
-        os.makedirs('bin/src/test')
+    if not os.path.exists('testsuite'):
+        os.makedirs('testsuite')
 
     for category in flakiness_category_generators:
         if category == 'random_api':
-            f = open("bin/random_api_test.py", "w")
+            f = open("testsuite/random_api_test.py", "w")
 
             for kind in flakiness_category_generators[category]:
                 generator = flakiness_category_generators[category][kind]
@@ -34,7 +33,7 @@ def main():
                 f.write("\n")
         f.close()
 
-    stream = os.popen('cd bin && pytest && cd ../..')
+    stream = os.popen('cd testsuite && pytest && cd ../..')
     output = stream.read()
     print(output)
 
