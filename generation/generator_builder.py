@@ -4,7 +4,7 @@ import generation.random_api as random_api
 
 class GeneratorBuilder:
     def __init__(self, config_file_name):
-        with open('config.json') as config_file:
+        with open(config_file_name) as config_file:
             self.data = json.load(config_file)
 
     def build_generator_dict(self):

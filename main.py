@@ -16,21 +16,24 @@ def main():
         os.makedirs('testsuite')
 
     for category in flakiness_category_generators:
-        if category == 'random_api':
-            test_file_writer = TestFileWriter(category)
-            function_file_writer = FunctionFileWriter(category)
+        test_file_writer = TestFileWriter(category)
+        function_file_writer = FunctionFileWriter(category)
 
-            for kind in flakiness_category_generators[category]:
-                generator = flakiness_category_generators[category][kind]
-                func_tree = generator.generate_flaky_function_tree()
-                test_tree = generator.generate_test_tree()
+        for kind in flakiness_category_generators[category]:
+            generator = flakiness_category_generators[category][kind]
+            func_tree = generator.generate_flaky_function_tree()
+            test_tree = generator.generate_test_tree()
 
-                test_file_writer.write_function(astor.to_source(test_tree))
-                function_file_writer.write_function(astor.to_source(func_tree))
+            test_file_writer.write_function(astor.to_source(test_tree))
+            function_file_writer.write_function(astor.to_source(func_tree))
 
-            test_file_writer.close()
-            function_file_writer.close()
+        test_file_writer.close()
+        function_file_writer.close()
 
+    run_test_suite()
+
+
+def run_test_suite():
     stream = os.popen('pytest testsuite')
     output = stream.read()
     print(output)
