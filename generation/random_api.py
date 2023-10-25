@@ -1,4 +1,5 @@
 import ast
+
 from .generator import Generator
 
 
@@ -42,7 +43,7 @@ class SummationGenerator(RandomApiGenerator):
             'test_sum',
             ast.arguments([], [], defaults=[]),
             [self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name('flaky_summation'), args=[ast.Constant(5)], keywords=[]),
+                ast.Call(func=ast.Name('random_api.flaky_summation'), args=[ast.Constant(5)], keywords=[]),
                 ast.Constant(self.summation_depth*5)
             )],
             []
@@ -84,7 +85,7 @@ class MultiplicationGenerator(RandomApiGenerator):
             'test_multiplication',
             ast.arguments([], [], defaults=[]),
             [self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name('flaky_multiplication'), args=[ast.Constant(5)], keywords=[]),
+                ast.Call(func=ast.Name('random_api.flaky_multiplication'), args=[ast.Constant(5)], keywords=[]),
                 ast.Constant(self.multiplication_depth ** 5)
             )],
             []

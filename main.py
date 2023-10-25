@@ -1,7 +1,9 @@
-import generation.random_api as random_api
 import os
 import astor
 
+import generation.random_api as random_api
+from file_writing.test_file_writer import TestFileWriter
+from file_writing.function_file_writer import FunctionFileWriter
 
 def main():
     flakiness_prob = 0.5
@@ -20,20 +22,21 @@ def main():
 
     for category in flakiness_category_generators:
         if category == 'random_api':
-            f = open("testsuite/random_api_test.py", "w")
+            test_file_writer = TestFileWriter(category)
+            function_file_writer = FunctionFileWriter(category)
 
             for kind in flakiness_category_generators[category]:
                 generator = flakiness_category_generators[category][kind]
                 func_tree = generator.generate_flaky_function_tree()
                 test_tree = generator.generate_test_tree()
 
-                f.write(astor.to_source(test_tree))
-                f.write("\n")
-                f.write(astor.to_source(func_tree))
-                f.write("\n")
-        f.close()
+                test_file_writer.write_function(astor.to_source(test_tree))
+                function_file_writer.write_function(astor.to_source(func_tree))
 
-    stream = os.popen('cd testsuite && pytest && cd ../..')
+            test_file_writer.close()
+            function_file_writer.close()
+
+    stream = os.popen('pytest testsuite')
     output = stream.read()
     print(output)
 
