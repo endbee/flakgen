@@ -1,5 +1,6 @@
 import os
 import astor
+import argparse
 
 from generation.generator_builder import GeneratorBuilder
 from file_writing.test_file_writer import TestFileWriter
@@ -7,8 +8,16 @@ from file_writing.function_file_writer import FunctionFileWriter
 
 
 def main():
-    config_file_name = "config.json"
-    generator_builder = GeneratorBuilder(config_file_name)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config_file_path")
+    args = parser.parse_args()
+
+    config_file_path = "config.json"
+
+    if args.config_file_path:
+        config_file_path = args.config_file_path
+
+    generator_builder = GeneratorBuilder(config_file_path)
 
     flakiness_category_generators = generator_builder.build_generator_dict()
 

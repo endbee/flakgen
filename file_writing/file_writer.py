@@ -1,10 +1,16 @@
 from abc import ABC, abstractmethod
+import sys
 
 
 class FileWriter(ABC):
     def __init__(self, module_name):
         self.module_name = module_name
-        self.file_handler = open(self.get_file_path(), "w")
+
+        try:
+            self.file_handler = open(self.get_file_path(), "w")
+        except OSError as e:
+            print(f"Unable to open file \"{self.get_file_path()}\": {e}", file=sys.stderr)
+            sys.exit()
 
         self.file_handler.write("import " + module_name)
         self.file_handler.write("\n")

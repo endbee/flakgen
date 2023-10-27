@@ -1,11 +1,17 @@
 import json
+import sys
 import generation.random_api as random_api
 
 
 class GeneratorBuilder:
-    def __init__(self, config_file_name):
-        with open(config_file_name) as config_file:
-            self.data = json.load(config_file)
+    def __init__(self, config_file_path):
+        try:
+            with open(config_file_path) as config_file:
+                self.data = json.load(config_file)
+        except OSError as e:
+            print(f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
+            sys.exit()
+
 
     def build_generator_dict(self):
         return {
