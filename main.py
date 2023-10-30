@@ -29,9 +29,14 @@ def main():
         function_file_writer = FunctionFileWriter(category)
 
         for kind in flakiness_category_generators[category]:
-            generator = flakiness_category_generators[category][kind]
-            func_tree = generator.generate_flaky_function_tree()
-            test_tree = generator.generate_test_tree()
+            if kind == 'summation':
+                generator = flakiness_category_generators[category][kind]
+                func_tree = generator.generate_flaky_function_tree()
+                test_tree = generator.generate_test_tree(5)
+            else:
+                generator = flakiness_category_generators[category][kind]
+                func_tree = generator.generate_flaky_function_tree()
+                test_tree = generator.generate_test_tree()
 
             test_file_writer.write_function(astor.to_source(test_tree))
             function_file_writer.write_function(astor.to_source(func_tree))

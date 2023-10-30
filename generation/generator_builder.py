@@ -12,7 +12,6 @@ class GeneratorBuilder:
             print(f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
             sys.exit()
 
-
     def build_generator_dict(self):
         return {
             'random_api': {
@@ -24,5 +23,9 @@ class GeneratorBuilder:
                     self.data['random_api']["multiplication"]["multiplication_depth"],
                     self.data['random_api']["multiplication"]["flakiness_prob"]
                 ),
+                'arithmetic': random_api.ArithmeticalGenerator(
+                    self.data['random_api']["arithmetical"]["expression_count"],
+                    self.data['random_api']["arithmetical"]["flakiness_prob"]
+                )
             }
         }
