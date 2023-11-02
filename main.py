@@ -22,15 +22,20 @@ def main():
 
     generator_builder = GeneratorBuilder(config_file_path)
 
+    # Instantiate generator dict that has the same structure as the config json to allow for connecting individual
+    # config properties to respective generator
     flakiness_category_generators = generator_builder.build_generator_dict()
 
     if not os.path.exists('testsuite'):
         os.makedirs('testsuite')
 
     for category in flakiness_category_generators:
+        # Instantiate file writer objects for each category to write them to separate file such that for example all
+        # randomness functions, tests, test order dependent functions and tests are in dedicated file respectively
         test_file_writer = TestFileWriter(category)
         function_file_writer = FunctionFileWriter(category)
 
+        # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
         for kind in flakiness_category_generators[category]:
             if kind == 'summation':
                 for i in range(10):

@@ -4,6 +4,7 @@ import generation.random_api as random_api
 
 
 class GeneratorBuilder:
+    # Reads the config file provided in path
     def __init__(self, config_file_path):
         try:
             with open(config_file_path) as config_file:
@@ -12,6 +13,7 @@ class GeneratorBuilder:
             print(f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
             sys.exit()
 
+    # Builds all implemented generator classes with respective parameters from config file
     def build_generator_dict(self):
         return {
             'random_api': {

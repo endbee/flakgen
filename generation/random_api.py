@@ -4,8 +4,10 @@ import random
 from .generator import Generator
 
 
+# Contains all generator classes that generate flaky function and test case pairs (of different kinds) due to randomness
 class RandomApiGenerator(Generator):
 
+    # Generates function call like 'numpy.random.random()'
     @staticmethod
     def generate_random_float_number_expression():
         return ast.Call(ast.Attribute(value=ast.Name(id='numpy.random'), attr='random'), args=[], keywords=[])
@@ -15,12 +17,14 @@ class SummationGenerator(RandomApiGenerator):
     def __init__(self, flakiness_prob):
         self.flakiness_prob = flakiness_prob
 
+    # Generates function that adds a summand as often as summation_depth indicates and then adds a noise with some prob
+    # like summation_depth=3, summand=5: 5 + 5 + 5 or 5 + 5 + 5 + 0.1
     def generate_flaky_function_tree(self, summation_depth, identifier):
         epsilon = ast.Constant(0.1)
         zero = ast.Constant(0)
 
         if_expr = ast.IfExp(
-            self.generate_compare_eq_expression(self.generate_random_float_number_expression(), ast.Constant(self.flakiness_prob)),
+            self.generate_compare_lt_expression(self.generate_random_float_number_expression(), ast.Constant(self.flakiness_prob)),
             zero,
             epsilon
         )
@@ -38,6 +42,7 @@ class SummationGenerator(RandomApiGenerator):
             []
         )
 
+    # Generates one line function that asserts equality between the call of the flaky function and non-flaky summation
     def generate_test_tree(self, summand, summation_depth, identifier):
         return ast.FunctionDef(
             'test_sum_' + identifier,
@@ -55,12 +60,14 @@ class MultiplicationGenerator(RandomApiGenerator):
     def __init__(self, flakiness_prob):
         self.flakiness_prob = flakiness_prob
 
+    # Generates a function that multiplies a multiplicand with itself as often as the multiplication depth indicates and
+    # inverts the expression with some prob, like multiplicand=2, mulitplication_depth=3: 2 * 2 * 2 or -(2 * 2 * 2)
     def generate_flaky_function_tree(self, multiplication_depth, identifier):
         minus_one = ast.Constant(-1)
         one = ast.Constant(1)
 
         if_expr = ast.IfExp(
-            self.generate_compare_eq_expression(self.generate_random_float_number_expression(),
+            self.generate_compare_lt_expression(self.generate_random_float_number_expression(),
                                                 ast.Constant(self.flakiness_prob)),
             one,
             minus_one
@@ -79,6 +86,8 @@ class MultiplicationGenerator(RandomApiGenerator):
             []
         )
 
+    # Generates one line function that asserts equality between the call
+    # of the flaky function and non-flaky multiplication
     def generate_test_tree(self, multiplicand, multiplication_depth, identifier):
         return ast.FunctionDef(
             'test_multiplication_' + identifier,
@@ -95,6 +104,7 @@ class ArithmeticalGenerator(RandomApiGenerator):
     OPERATORS = [ast.Add(), ast.Mult(), ast.Div(), ast.Sub()]
 
     def __init__(self, expression_count, flakiness_prob):
+        self.arithmetical_expression = None
         self.expression_count = expression_count
         self.flakiness_prob = flakiness_prob
 
@@ -105,6 +115,8 @@ class ArithmeticalGenerator(RandomApiGenerator):
     def get_random_operand():
         return ast.Constant(random.randint(1,9))
 
+    # Generates expression where random numbers are concatinated with random airthmetical operators as often as the
+    # expression_count indicates like, expression_count=4: 3 - 2 - 4 * 5
     def generate_arithmetical_expression(self):
         arithmetical_expression = ast.Expression(
                     ast.BinOp(
@@ -124,12 +136,13 @@ class ArithmeticalGenerator(RandomApiGenerator):
 
         return arithmetical_expression
 
+    # Adds noise to an arithmetical expression with some prob
     def make_arithmetical_expression_flaky(self, arithmetical_expression):
         epsilon = ast.Constant(0.1)
         zero = ast.Constant(0)
 
         if_expr = ast.IfExp(
-            self.generate_compare_eq_expression(
+            self.generate_compare_lt_expression(
                 self.generate_random_float_number_expression(),
                 ast.Constant(self.flakiness_prob)
             ),
@@ -139,8 +152,11 @@ class ArithmeticalGenerator(RandomApiGenerator):
 
         return ast.Expression(ast.BinOp(left=arithmetical_expression, op=ast.Add(), right=if_expr))
 
+    # Generates function that calculates some flaky arithmetical expression
     def generate_flaky_function_tree(self, identifier):
+        # Safe the non-flaky expression to have comparison base
         self.arithmetical_expression = self.generate_arithmetical_expression()
+
         return ast.FunctionDef(
             'flaky_arithmetical_' + identifier,
             ast.arguments([], [], defaults=[]),
@@ -151,6 +167,7 @@ class ArithmeticalGenerator(RandomApiGenerator):
             []
         )
 
+    # Generates one line test case that asserts equality between flaky and non-flaky arithmetical expression
     def generate_test_tree(self, identifier):
         return ast.FunctionDef(
             'test_arithmetical_' + identifier,

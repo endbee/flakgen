@@ -3,6 +3,8 @@ import sys
 
 
 class FileWriter(ABC):
+
+    # Opens respective file for writing for the module
     def __init__(self, module_name):
         self.module_name = module_name
 
@@ -12,11 +14,7 @@ class FileWriter(ABC):
             print(f"Unable to open file \"{self.get_file_path()}\": {e}", file=sys.stderr)
             sys.exit()
 
-        self.file_handler.write("import " + module_name)
-        self.file_handler.write("\n")
-        self.file_handler.write("\n")
-        self.file_handler.write("\n")
-
+    # Gets a function definition as string and writes it to the file
     def write_function(self, function):
         self.file_handler.write(function)
         self.file_handler.write("\n")
