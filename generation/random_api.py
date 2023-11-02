@@ -12,11 +12,10 @@ class RandomApiGenerator(Generator):
 
 
 class SummationGenerator(RandomApiGenerator):
-    def __init__(self, summation_depth, flakiness_prob):
-        self.summation_depth = summation_depth
+    def __init__(self, flakiness_prob):
         self.flakiness_prob = flakiness_prob
 
-    def generate_flaky_function_tree(self):
+    def generate_flaky_function_tree(self, summation_depth, identifier):
         epsilon = ast.Constant(0.1)
         zero = ast.Constant(0)
 
@@ -28,24 +27,24 @@ class SummationGenerator(RandomApiGenerator):
 
         summation_expression = ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=if_expr))
 
-        for i in range(self.summation_depth-1):
+        for i in range(summation_depth-1):
             summation_expression = \
                 ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=summation_expression))
 
         return ast.FunctionDef(
-            'flaky_summation',
+            'flaky_summation_' + identifier,
             ast.arguments([], [ast.arg(arg='summand')], defaults=[]),
             [ast.Import(names=[ast.alias('numpy')]), ast.Return(summation_expression)],
             []
         )
 
-    def generate_test_tree(self, summand):
+    def generate_test_tree(self, summand, summation_depth, identifier):
         return ast.FunctionDef(
-            'test_sum',
+            'test_sum_' + identifier,
             ast.arguments([], [], defaults=[]),
             [self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name('random_api.flaky_summation'), args=[ast.Constant(summand)], keywords=[]),
-                ast.Constant(self.summation_depth*summand)
+                ast.Call(func=ast.Name('random_api.flaky_summation_' + identifier), args=[ast.Constant(summand)], keywords=[]),
+                ast.Constant(summation_depth*summand)
             )],
             []
         )
@@ -53,11 +52,10 @@ class SummationGenerator(RandomApiGenerator):
 
 class MultiplicationGenerator(RandomApiGenerator):
 
-    def __init__(self, multiplication_depth, flakiness_prob):
-        self.multiplication_depth = multiplication_depth
+    def __init__(self, flakiness_prob):
         self.flakiness_prob = flakiness_prob
 
-    def generate_flaky_function_tree(self):
+    def generate_flaky_function_tree(self, multiplication_depth, identifier):
         minus_one = ast.Constant(-1)
         one = ast.Constant(1)
 
@@ -70,24 +68,24 @@ class MultiplicationGenerator(RandomApiGenerator):
 
         multiplication_expression = ast.Expression(ast.BinOp(left=ast.Name(id='multiplicand'), op=ast.Mult(), right=if_expr))
 
-        for i in range(self.multiplication_depth - 1):
+        for i in range(multiplication_depth - 1):
             multiplication_expression = \
                 ast.Expression(ast.BinOp(left=ast.Name(id='multiplicand'), op=ast.Mult(), right=multiplication_expression))
 
         return ast.FunctionDef(
-            'flaky_multiplication',
+            'flaky_multiplication_' + identifier,
             ast.arguments([], [ast.arg(arg='multiplicand')], defaults=[]),
             [ast.Import(names=[ast.alias('numpy')]), ast.Return(multiplication_expression)],
             []
         )
 
-    def generate_test_tree(self):
+    def generate_test_tree(self, multiplicand, multiplication_depth, identifier):
         return ast.FunctionDef(
-            'test_multiplication',
+            'test_multiplication_' + identifier,
             ast.arguments([], [], defaults=[]),
             [self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name('random_api.flaky_multiplication'), args=[ast.Constant(5)], keywords=[]),
-                ast.Constant(self.multiplication_depth ** 5)
+                ast.Call(func=ast.Name('random_api.flaky_multiplication_' + identifier), args=[ast.Constant(multiplicand)], keywords=[]),
+                ast.Constant(multiplication_depth ** multiplicand)
             )],
             []
         )
@@ -99,7 +97,6 @@ class ArithmeticalGenerator(RandomApiGenerator):
     def __init__(self, expression_count, flakiness_prob):
         self.expression_count = expression_count
         self.flakiness_prob = flakiness_prob
-        self.arithmetical_expression = self.generate_arithmetical_expression()
 
     def get_random_binary_operator(self):
         return random.choice(self.OPERATORS)
@@ -142,9 +139,10 @@ class ArithmeticalGenerator(RandomApiGenerator):
 
         return ast.Expression(ast.BinOp(left=arithmetical_expression, op=ast.Add(), right=if_expr))
 
-    def generate_flaky_function_tree(self):
+    def generate_flaky_function_tree(self, identifier):
+        self.arithmetical_expression = self.generate_arithmetical_expression()
         return ast.FunctionDef(
-            'flaky_arithmetical',
+            'flaky_arithmetical_' + identifier,
             ast.arguments([], [], defaults=[]),
             [
                 ast.Import(names=[ast.alias('numpy')]),
@@ -153,12 +151,12 @@ class ArithmeticalGenerator(RandomApiGenerator):
             []
         )
 
-    def generate_test_tree(self):
+    def generate_test_tree(self, identifier):
         return ast.FunctionDef(
-            'test_arithmetical',
+            'test_arithmetical_' + identifier,
             ast.arguments([], [], defaults=[]),
             [self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name('random_api.flaky_arithmetical'), args=[ast.Constant(5)], keywords=[]),
+                ast.Call(func=ast.Name('random_api.flaky_arithmetical_' + identifier), args=[], keywords=[]),
                 self.arithmetical_expression
             )],
             []
