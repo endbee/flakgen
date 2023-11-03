@@ -38,13 +38,13 @@ class SummationGenerator(RandomApiGenerator):
         return ast.FunctionDef(
             'flaky_summation_' + identifier,
             ast.arguments([], [ast.arg(arg='summand')], defaults=[]),
-            [ast.Import(names=[ast.alias('numpy')]), ast.Return(summation_expression)],
+            [ast.Return(summation_expression)],
             []
         )
 
     # Generates one line function that asserts equality between the call of the flaky function and non-flaky summation
     def generate_test_tree(self, summand, summation_depth, identifier):
-        return ast.FunctionDef(
+        test_function = ast.FunctionDef(
             'test_sum_' + identifier,
             ast.arguments([], [], defaults=[]),
             [self.generate_assert_equality_expression(
@@ -53,6 +53,7 @@ class SummationGenerator(RandomApiGenerator):
             )],
             []
         )
+        return test_function
 
 
 class MultiplicationGenerator(RandomApiGenerator):
@@ -82,7 +83,7 @@ class MultiplicationGenerator(RandomApiGenerator):
         return ast.FunctionDef(
             'flaky_multiplication_' + identifier,
             ast.arguments([], [ast.arg(arg='multiplicand')], defaults=[]),
-            [ast.Import(names=[ast.alias('numpy')]), ast.Return(multiplication_expression)],
+            [ast.Return(multiplication_expression)],
             []
         )
 
@@ -161,7 +162,6 @@ class ArithmeticalGenerator(RandomApiGenerator):
             'flaky_arithmetical_' + identifier,
             ast.arguments([], [], defaults=[]),
             [
-                ast.Import(names=[ast.alias('numpy')]),
                 ast.Return(self.make_arithmetical_expression_flaky(self.arithmetical_expression))
             ],
             []

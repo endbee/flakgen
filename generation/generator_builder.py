@@ -1,6 +1,7 @@
 import json
 import sys
 import generation.random_api as random_api
+import generation.test_order_dependent as test_order_dependent
 
 
 class GeneratorBuilder:
@@ -27,5 +28,8 @@ class GeneratorBuilder:
                     self.data['random_api']["arithmetical"]["expression_count"],
                     self.data['random_api']["arithmetical"]["flakiness_prob"]
                 )
+            },
+            'test_order_dependent': {
+                'basic': test_order_dependent.BasicTestOrderDependentGenerator()
             }
         }

@@ -1,3 +1,4 @@
+import ast
 import os
 import random
 
@@ -37,34 +38,64 @@ def main():
 
         # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
         for kind in flakiness_category_generators[category]:
+
             if kind == 'summation':
+                generator = flakiness_category_generators[category][kind]
+                test_statements = [ast.Import( names=[ast.alias('random_api')])]
+                function_statements = [ast.Import( names=[ast.alias('numpy')])]
                 for i in range(10):
                     identifier = uuid.uuid4().hex
                     summation_depth = random.randint(1,10)
                     summand = random.randint(1, 10)
-                    generator = flakiness_category_generators[category][kind]
                     func_tree = generator.generate_flaky_function_tree(summation_depth, identifier)
                     test_tree = generator.generate_test_tree(summand, summation_depth, identifier)
-                    test_file_writer.write_function(astor.to_source(test_tree))
-                    function_file_writer.write_function(astor.to_source(func_tree))
+                    test_statements.append(test_tree)
+                    function_statements.append(func_tree)
+
+                functions_module = ast.Module(body=function_statements)
+                tests_module = ast.Module(body=test_statements)
+                test_file_writer.write_function(astor.to_source(tests_module))
+                function_file_writer.write_function(astor.to_source(functions_module))
+
             if kind == 'multiplication':
+                generator = flakiness_category_generators[category][kind]
+                test_statements = []
+                function_statements = []
                 for i in range(10):
                     identifier = uuid.uuid4().hex
                     multiplication_depth = random.randint(1,10)
                     multiplicand = random.randint(1, 10)
-                    generator = flakiness_category_generators[category][kind]
                     func_tree = generator.generate_flaky_function_tree(multiplication_depth, identifier)
                     test_tree = generator.generate_test_tree(multiplicand, multiplication_depth, identifier)
-                    test_file_writer.write_function(astor.to_source(test_tree))
-                    function_file_writer.write_function(astor.to_source(func_tree))
+                    test_statements.append(test_tree)
+                    function_statements.append(func_tree)
+
+                functions_module = ast.Module(body=function_statements)
+                tests_module = ast.Module(body=test_statements)
+                test_file_writer.write_function(astor.to_source(tests_module))
+                function_file_writer.write_function(astor.to_source(functions_module))
+
             if kind == 'arithmetical':
+                generator = flakiness_category_generators[category][kind]
+                test_statements = []
+                function_statements = []
                 for i in range(10):
                     identifier = uuid.uuid4().hex
-                    generator = flakiness_category_generators[category][kind]
                     func_tree = generator.generate_flaky_function_tree(identifier)
                     test_tree = generator.generate_test_tree(identifier)
-                    test_file_writer.write_function(astor.to_source(test_tree))
-                    function_file_writer.write_function(astor.to_source(func_tree))
+                    test_statements.append(test_tree)
+                    function_statements.append(func_tree)
+
+                functions_module = ast.Module(body=function_statements)
+                tests_module = ast.Module(body=test_statements)
+                test_file_writer.write_function(astor.to_source(tests_module))
+                function_file_writer.write_function(astor.to_source(functions_module))
+
+            if kind == 'basic':
+                identifier = uuid.uuid4().hex
+                generator = flakiness_category_generators[category][kind]
+                #test_tree = generator.generate_test_tree(identifier)
+                #test_file_writer.write_function(astor.to_source(test_tree))
 
         test_file_writer.close()
         function_file_writer.close()
