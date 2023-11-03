@@ -36,6 +36,7 @@ def main():
         test_file_writer = TestFileWriter(category)
         function_file_writer = FunctionFileWriter(category)
 
+        # TODO: Extract module generation to dedicated function of generator
         # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
         for kind in flakiness_category_generators[category]:
 
