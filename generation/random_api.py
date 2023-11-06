@@ -95,7 +95,7 @@ class MultiplicationGenerator(RandomApiGenerator):
             ast.arguments([], [], defaults=[]),
             [self.generate_assert_equality_expression(
                 ast.Call(func=ast.Name('random_api.flaky_multiplication_' + identifier), args=[ast.Constant(multiplicand)], keywords=[]),
-                ast.Constant(multiplication_depth ** multiplicand)
+                ast.Constant(multiplicand ** multiplication_depth)
             )],
             []
         )

@@ -12,5 +12,10 @@
       "expression_count":  5,
       "flakiness_prob":  0.5
     }
+  },
+  "test_order_dependent": {
+    "basic": {
+      "flakiness_prob":  0.5
+    }
   }
 }
