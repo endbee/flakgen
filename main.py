@@ -1,6 +1,8 @@
 import ast
 import os
 import random
+import string
+
 import astor
 import argparse
 import uuid
@@ -8,9 +10,12 @@ import uuid
 from generation.generator_builder import GeneratorBuilder
 from file_writing.test_file_writer import TestFileWriter
 from file_writing.function_file_writer import FunctionFileWriter
+from file_writing.class_definition_file_writer import ClassDefinitionFileWriter
 
 
 def main():
+    cleanup_old_testsuite()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_file_path")
     args = parser.parse_args()
@@ -96,19 +101,46 @@ def main():
 
         if category == 'test_order_dependent':
             for kind in flakiness_category_generators[category]:
-                if kind == 'basic':
-                    test_file_writer = TestFileWriter(f'{category}_{kind}')
-                    identifier = uuid.uuid4().hex
-                    generator = flakiness_category_generators[category][kind]
-                    test_tree = generator.generate_test_tree(identifier)
-                    test_file_writer.write_function(astor.to_source(test_tree))
-                    test_file_writer.close()
+                if kind == 'basic_victim_polluter':
+                    for i in range(10):
+                        identifier = uuid.uuid4().hex
+                        test_file_writer = TestFileWriter(f'{category}_{kind}_{identifier}')
+                        generator = flakiness_category_generators[category][kind]
+                        test_tree = generator.generate_test_tree(random.randint(2, 5))
+                        test_file_writer.write_function(astor.to_source(test_tree))
+                        test_file_writer.close()
+                if kind == 'basic_brittle_state_setter':
+                    for i in range(10):
+                        identifier = uuid.uuid4().hex
+                        test_file_writer = TestFileWriter(f'{category}_{kind}_{identifier}')
+                        generator = flakiness_category_generators[category][kind]
+                        test_tree = generator.generate_test_tree(random.randint(2,5))
+                        test_file_writer.write_function(astor.to_source(test_tree))
+                        test_file_writer.close()
+                if kind == 'classes':
+                        identifier = uuid.uuid4().hex
+                        state_name = random.choice(string.ascii_lowercase)
+                        dummy_function_return = random.randint(0, 100)
+                        test_file_writer = TestFileWriter(f'{category}_{kind}_{identifier}')
+                        class_definition_file_writer = ClassDefinitionFileWriter(f'{category}_{kind}_{identifier}')
+                        generator = flakiness_category_generators[category][kind]
+                        test_tree = generator.generate_test_tree(identifier, state_name, dummy_function_return)
+                        class_tree = generator.generate_class_definition(identifier, state_name, dummy_function_return)
+                        test_file_writer.write_function(astor.to_source(test_tree))
+                        class_definition_file_writer.write_function(astor.to_source(class_tree))
+                        test_file_writer.close()
+                        class_definition_file_writer.close()
 
     run_test_suite()
 
+def cleanup_old_testsuite():
+    stream = os.popen('rm -rf testsuite')
+    output = stream.read()
+    print(output)
+
 
 def run_test_suite():
-    stream = os.popen('pytest testsuite')
+    stream = os.popen('pytest testsuite --random-order')
     output = stream.read()
     print(output)
 
