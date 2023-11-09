@@ -108,7 +108,7 @@ class BasicBrittleStateSetterTestOrderDependentGenerator(Generator):
         return ast.Module(body=global_scope_statements)
 
 
-class ClassesTestOrderDependentGenerator(Generator):
+class ClassesBrittleStateSetterTestOrderDependentGenerator(Generator):
 
     def generate_class_definition(self, identifier, state_name, dummy_function_return):
 
@@ -143,7 +143,7 @@ class ClassesTestOrderDependentGenerator(Generator):
         class_body.append(class_dummy_function)
 
         class_def = ast.ClassDef(
-            name=f'class_{identifier}',
+            name=f'class_brittle_state_setter_{identifier}',
             bases=[],
             body=class_body,
             decorator_list=[],
@@ -156,13 +156,13 @@ class ClassesTestOrderDependentGenerator(Generator):
         class_instance_variable_name = ast.Name(class_instance_variable_name_string)
 
         class_instance_value = ast.Call(
-            func=ast.Name(f'test_order_dependent_classes_{identifier}_class.class_{identifier}'),
+            func=ast.Name(f'test_order_dependent_classes_brittle_state_setter_{identifier}_class.class_brittle_state_setter_{identifier}'),
             args=[],
             keywords=[],
         )
 
         global_scope_statements = [
-            ast.Import(names=[ast.alias(f'test_order_dependent_classes_{identifier}_class')]),
+            ast.Import(names=[ast.alias(f'test_order_dependent_classes_brittle_state_setter_{identifier}_class')]),
             ast.Global([class_instance_variable_name_string]),
             ast.Assign(targets=[class_instance_variable_name], value=class_instance_value,
                        type_ignores=[])

@@ -32,6 +32,6 @@ class GeneratorBuilder:
             'test_order_dependent': {
                 'basic_victim_polluter': test_order_dependent.BasicVictimPolluterTestOrderDependentGenerator(),
                 'basic_brittle_state_setter': test_order_dependent.BasicBrittleStateSetterTestOrderDependentGenerator(),
-                'classes': test_order_dependent.ClassesTestOrderDependentGenerator(),
+                'classes_brittle_state_setter': test_order_dependent.ClassesBrittleStateSetterTestOrderDependentGenerator(),
             }
         }

@@ -117,7 +117,7 @@ def main():
                         test_tree = generator.generate_test_tree(random.randint(2,5))
                         test_file_writer.write_function(astor.to_source(test_tree))
                         test_file_writer.close()
-                if kind == 'classes':
+                if kind == 'classes_brittle_state_setter':
                         identifier = uuid.uuid4().hex
                         state_name = random.choice(string.ascii_lowercase)
                         dummy_function_return = random.randint(0, 100)
