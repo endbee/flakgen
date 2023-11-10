@@ -89,7 +89,7 @@ class ClassesBrittleStateSetterTestOrderDependentGenerator(Generator):
                 ast.Call(func=ast.Name(f'instance.set_member_state_{state_identifier}'), args=[ast.Constant('success_state')],
                          keywords=[])),
             self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name(f'instance.some_function'), args=[], keywords=[]),
+                ast.Call(func=ast.Name(f'instance.dummy_function'), args=[], keywords=[]),
                 ast.Constant(dummy_function_return)
             )
         ]
