@@ -1,7 +1,12 @@
 import json
 import sys
-import generation.random_api as random_api
-import generation.test_order_dependent as test_order_dependent
+
+import generation.random_api.arithmetical
+import generation.random_api.multiplication
+import generation.random_api.summation
+import generation.test_order_dependent.basic_brittle_state_setter
+import generation.test_order_dependent.basic_victim_polluter
+import generation.test_order_dependent.classes_brittle_state_setter
 
 
 class GeneratorBuilder:
@@ -18,20 +23,20 @@ class GeneratorBuilder:
     def build_generator_dict(self):
         return {
             'random_api': {
-                'summation': random_api.SummationGenerator(
+                'summation': generation.random_api.summation.SummationGenerator(
                     self.data['random_api']["summation"]["flakiness_prob"]
                 ),
-                'multiplication': random_api.MultiplicationGenerator(
+                'multiplication': generation.random_api.multiplication.MultiplicationGenerator(
                     self.data['random_api']["multiplication"]["flakiness_prob"]
                 ),
-                'arithmetical': random_api.ArithmeticalGenerator(
+                'arithmetical': generation.random_api.arithmetical.ArithmeticalGenerator(
                     self.data['random_api']["arithmetical"]["expression_count"],
                     self.data['random_api']["arithmetical"]["flakiness_prob"]
                 )
             },
             'test_order_dependent': {
-                'basic_victim_polluter': test_order_dependent.BasicVictimPolluterTestOrderDependentGenerator(),
-                'basic_brittle_state_setter': test_order_dependent.BasicBrittleStateSetterTestOrderDependentGenerator(),
-                'classes_brittle_state_setter': test_order_dependent.ClassesBrittleStateSetterTestOrderDependentGenerator(),
+                'basic_victim_polluter': generation.test_order_dependent.basic_victim_polluter.BasicVictimPolluterTestOrderDependentGenerator(),
+                'basic_brittle_state_setter': generation.test_order_dependent.basic_brittle_state_setter.BasicBrittleStateSetterTestOrderDependentGenerator(),
+                'classes_brittle_state_setter': generation.test_order_dependent.classes_brittle_state_setter.ClassesBrittleStateSetterTestOrderDependentGenerator(),
             }
         }
