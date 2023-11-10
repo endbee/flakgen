@@ -7,6 +7,7 @@ import generation.random_api.summation
 import generation.test_order_dependent.basic_brittle_state_setter
 import generation.test_order_dependent.basic_victim_polluter
 import generation.test_order_dependent.classes_brittle_state_setter
+import generation.test_order_dependent.classes_victim_polluter
 
 
 class GeneratorBuilder:
@@ -38,5 +39,6 @@ class GeneratorBuilder:
                 'basic_victim_polluter': generation.test_order_dependent.basic_victim_polluter.BasicVictimPolluterTestOrderDependentGenerator(),
                 'basic_brittle_state_setter': generation.test_order_dependent.basic_brittle_state_setter.BasicBrittleStateSetterTestOrderDependentGenerator(),
                 'classes_brittle_state_setter': generation.test_order_dependent.classes_brittle_state_setter.ClassesBrittleStateSetterTestOrderDependentGenerator(),
+                'classes_victim_polluter': generation.test_order_dependent.classes_victim_polluter.ClassesVictimPolluterTestOrderDependentGenerator(),
             }
         }

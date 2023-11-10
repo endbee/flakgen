@@ -23,6 +23,9 @@
     },
     "classes_brittle_state_setter": {
       "flakiness_prob":  0.5
+    },
+    "classes_victim_polluter": {
+      "flakiness_prob":  0.5
     }
   }
 }
