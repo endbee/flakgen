@@ -4,7 +4,7 @@ import random
 from generation.generator import Generator
 
 
-class  ClassesVictimPolluterTestOrderDependentGenerator(Generator):
+class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
     @staticmethod
     def generate_class_definition(class_identifier, state_identifier):
         class_body = []

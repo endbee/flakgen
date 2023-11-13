@@ -139,31 +139,32 @@ def main():
 
                         test_file_writer.close()
                 if kind == 'classes_victim_polluter':
-                    class_identifier = uuid.uuid4().hex
-                    state_identifier = random.choice(string.ascii_lowercase)
-                    number_of_tests = random.randint(2, 5)
+                    for i in range(10):
+                        class_identifier = uuid.uuid4().hex
+                        state_identifier = random.choice(string.ascii_lowercase)
+                        number_of_tests = random.randint(2, 5)
 
-                    module_name = f'{category}_{kind}_{class_identifier}'
+                        module_name = f'{category}_{kind}_{class_identifier}'
 
-                    test_file_writer = TestFileWriter(module_name)
-                    class_definition_file_writer = ClassDefinitionFileWriter(module_name)
-                    generator = flakiness_category_generators[category][kind]
+                        test_file_writer = TestFileWriter(module_name)
+                        class_definition_file_writer = ClassDefinitionFileWriter(module_name)
+                        generator = flakiness_category_generators[category][kind]
 
-                    test_tree = generator.generate_test_tree(
-                        state_identifier,
-                        class_identifier,
-                        number_of_tests
-                    )
-                    class_tree = generator.generate_class_definition(
-                        class_identifier,
-                        state_identifier,
-                    )
+                        test_tree = generator.generate_test_tree(
+                            state_identifier,
+                            class_identifier,
+                            number_of_tests
+                        )
+                        class_tree = generator.generate_class_definition(
+                            class_identifier,
+                            state_identifier,
+                        )
 
-                    test_file_writer.write_function(astor.to_source(test_tree))
-                    class_definition_file_writer.write_function(astor.to_source(class_tree))
+                        test_file_writer.write_function(astor.to_source(test_tree))
+                        class_definition_file_writer.write_function(astor.to_source(class_tree))
 
-                    test_file_writer.close()
-                    class_definition_file_writer.close()
+                        test_file_writer.close()
+                        class_definition_file_writer.close()
                 if kind == 'classes_brittle_state_setter':
                     for i in range(10):
                         class_identifier = uuid.uuid4().hex
@@ -193,7 +194,7 @@ def main():
                         test_file_writer.close()
                         class_definition_file_writer.close()
 
-    #run_test_suite()
+    run_test_suite()
 
 def cleanup_old_testsuite():
     stream = os.popen('rm -rf testsuite')
