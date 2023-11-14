@@ -54,19 +54,15 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
             if i == polluted_test:
                 # when polluter, pollute by setting new value to global variable
                 test_postfix = 'polluter'
-                polluted_value = ast.Constant('failure_state')
-                test_statements.append(ast.Expr(ast.Global(names=[class_instance_name])))
-                test_statements.append(ast.Expr(ast.Call(func=ast.Name(f'{class_instance_name}.set_member_state_{state_identifier}'), args=[ast.Constant('failure_state')],
-                         keywords=[])))
-                test_statements.append(self.generate_assert_equality_expression(ast.Call(func=ast.Name(f'{class_instance_name}.get_member_state_{state_identifier}'), args=[],
-                         keywords=[]), polluted_value))
+                test_statements.extend(
+                    self.generate_polluter_statements(class_instance_name, state_identifier)
+                )
             else:
                 # when victim, just assert the global variable value to be the initial value
                 test_postfix = 'victim'
-                test_statements.append(ast.Expr(ast.Global(names=[class_instance_name])))
-                test_statements.append(
-                    self.generate_assert_equality_expression(ast.Call(func=ast.Name(f'{class_instance_name}.get_member_state_{state_identifier}'), args=[],
-                         keywords=[]), success_state_value))
+                test_statements.extend(
+                    self.generate_victim_statements(class_instance_name, state_identifier, success_state_value)
+                )
 
             test = ast.FunctionDef(
                 f'test_{i}_{test_postfix}',
@@ -78,6 +74,33 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
             statements.append(test)
 
         return ast.Module(statements)
+
+    def generate_victim_statements(self, class_instance_name, state_identifier, success_state_value):
+        victim_statements = [
+            ast.Expr(ast.Global(names=[class_instance_name])),
+            self.generate_assert_equality_expression(
+                                 ast.Call(func=ast.Name(f'{class_instance_name}.get_member_state_{state_identifier}'),
+                                          args=[],
+                                          keywords=[]), success_state_value
+            )
+        ]
+
+        return victim_statements
+
+    def generate_polluter_statements(self, class_instance_name, state_identifier):
+        polluter_statements = []
+        polluted_value = ast.Constant('failure_state')
+
+        polluter_statements.append(ast.Expr(ast.Global(names=[class_instance_name])))
+        polluter_statements.append(ast.Expr(
+            ast.Call(func=ast.Name(f'{class_instance_name}.set_member_state_{state_identifier}'),
+                     args=[ast.Constant('failure_state')],
+                     keywords=[])))
+        polluter_statements.append(self.generate_assert_equality_expression(
+            ast.Call(func=ast.Name(f'{class_instance_name}.get_member_state_{state_identifier}'), args=[],
+                     keywords=[]), polluted_value))
+
+        return polluter_statements
 
     def generate_brittle(self, state_identifier, class_instance_name):
         actual = ast.Name('actual')

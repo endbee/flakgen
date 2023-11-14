@@ -194,44 +194,45 @@ def main():
                         test_file_writer.close()
                         class_definition_file_writer.close()
                 if kind == 'multiple_classes_victim_polluter':
-                    module_identifier = uuid.uuid4().hex
-                    class_a_identifier = uuid.uuid4().hex
-                    state_a_identifier = random.choice(string.ascii_lowercase)
-                    class_b_identifier = uuid.uuid4().hex
-                    state_b_identifier = random.choice(string.ascii_lowercase)
-                    number_of_tests = random.randint(2, 5)
+                    for i in range(10):
+                        module_identifier = uuid.uuid4().hex
+                        class_a_identifier = uuid.uuid4().hex
+                        state_a_identifier = random.choice(string.ascii_lowercase)
+                        class_b_identifier = uuid.uuid4().hex
+                        state_b_identifier = random.choice(string.ascii_lowercase)
+                        number_of_tests = random.randint(2, 5)
 
-                    module_name = f'{category}_{kind}_{module_identifier}'
+                        module_name = f'{category}_{kind}_{module_identifier}'
 
-                    test_file_writer = TestFileWriter(module_name)
-                    class_definition_file_writer = ClassDefinitionFileWriter(module_name)
-                    generator = flakiness_category_generators[category][kind]
+                        test_file_writer = TestFileWriter(module_name)
+                        class_definition_file_writer = ClassDefinitionFileWriter(module_name)
+                        generator = flakiness_category_generators[category][kind]
 
-                    test_tree = generator.generate_test_tree(
-                        module_identifier,
-                        state_a_identifier,
-                        class_a_identifier,
-                        state_b_identifier,
-                        class_b_identifier,
-                        number_of_tests
-                    )
+                        test_tree = generator.generate_test_tree(
+                            module_identifier,
+                            state_a_identifier,
+                            class_a_identifier,
+                            state_b_identifier,
+                            class_b_identifier,
+                            number_of_tests
+                        )
 
-                    class_a_tree = generator.generate_class_definition(
-                        class_a_identifier,
-                        state_a_identifier,
-                    )
+                        class_a_tree = generator.generate_class_definition(
+                            class_a_identifier,
+                            state_a_identifier,
+                        )
 
-                    class_b_tree = generator.generate_class_definition(
-                        class_b_identifier,
-                        state_b_identifier,
-                    )
+                        class_b_tree = generator.generate_class_definition(
+                            class_b_identifier,
+                            state_b_identifier,
+                        )
 
-                    test_file_writer.write_function(astor.to_source(test_tree))
-                    class_definition_file_writer.write_function(astor.to_source(class_a_tree))
-                    class_definition_file_writer.write_function(astor.to_source(class_b_tree))
+                        test_file_writer.write_function(astor.to_source(test_tree))
+                        class_definition_file_writer.write_function(astor.to_source(class_a_tree))
+                        class_definition_file_writer.write_function(astor.to_source(class_b_tree))
 
-                    test_file_writer.close()
-                    class_definition_file_writer.close()
+                        test_file_writer.close()
+                        class_definition_file_writer.close()
 
     run_test_suite()
 

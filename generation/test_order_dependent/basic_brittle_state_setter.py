@@ -8,15 +8,9 @@ class BasicBrittleStateSetterTestOrderDependentGenerator(Generator):
     def generate_test_tree(self, states_to_be_set=2):
         global_state_name = 'state'
         global_state = ast.Name(global_state_name)
-        global_state_keys = []
-        global_state_values = []
 
-        # prepare state variable
-        for i in range(states_to_be_set):
-            global_state_keys.append(ast.Constant(f'state_for_brittle_{i}'))
-            global_state_values.append(ast.Constant('failure_state'))
-            global_state_keys.append(ast.Constant(f'standalone_state_{i}'))
-            global_state_values.append(ast.Constant('value'))
+        # prepare state
+        global_state_keys, global_state_values = self.initialize_global_state(states_to_be_set)
 
         global_scope_statements = [
             ast.Expr(ast.Global(names=[global_state_name])),
@@ -32,6 +26,18 @@ class BasicBrittleStateSetterTestOrderDependentGenerator(Generator):
             global_scope_statements.append(brittle)
 
         return ast.Module(body=global_scope_statements)
+
+    def initialize_global_state(self, states_to_be_set):
+        global_state_keys = []
+        global_state_values = []
+
+        for i in range(states_to_be_set):
+            global_state_keys.append(ast.Constant(f'state_for_brittle_{i}'))
+            global_state_values.append(ast.Constant('failure_state'))
+            global_state_keys.append(ast.Constant(f'standalone_state_{i}'))
+            global_state_values.append(ast.Constant('value'))
+
+        return global_state_keys, global_state_values
 
     def generate_brittle(self, global_state_name, brittle_number):
         # assert state is in success state
