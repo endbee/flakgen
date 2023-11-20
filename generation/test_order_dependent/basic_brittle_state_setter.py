@@ -30,7 +30,7 @@ class BasicBrittleStateSetterTestOrderDependentGenerator(Generator):
     def initialize_global_state(self, states_to_be_set):
         global_state_keys = []
         global_state_values = []
-        #test
+
         for i in range(states_to_be_set):
             global_state_keys.append(ast.Constant(f'state_for_brittle_{i}'))
             global_state_values.append(ast.Constant('failure_state'))
