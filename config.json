@@ -13,6 +13,7 @@
       "flakiness_prob":  0.5
     },
     "combination": {
+      "max_number_of_assertions": 10,
       "arithmetical": {
         "max_expression_depth":  10,
         "flakiness_prob":  0.5

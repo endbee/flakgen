@@ -11,7 +11,7 @@ from generation.random_api.summation import SummationGenerator
 
 class RandomApiCombinationGenerator(RandomApiGenerator):
     def __init__(self, summation_generator, multiplication_generator, arithmetical_generator):
-        self.generators = [arithmetical_generator]
+        self.generators = [summation_generator, multiplication_generator, arithmetical_generator]
 
     def get_random_generator(self):
         return random.choice(self.generators)
@@ -48,7 +48,7 @@ class RandomApiCombinationGenerator(RandomApiGenerator):
 
         return ast.Module(statements)
 
-    def generate_test_tree(
+    def generate_test_statements(
             self,
             summation_depth,
             multiplication_depth,
@@ -68,8 +68,9 @@ class RandomApiCombinationGenerator(RandomApiGenerator):
                 args=[ast.Constant(multiplicand)], keywords=[])
             function_statements.append(ast.Assign(targets=[actual], value=actual_value,
                    type_ignores=[]),)
-            function_statements.append(ast.Assign(targets=[expected], value=ast.Constant(multiplication_depth ** multiplicand),
+            function_statements.append(ast.Assign(targets=[expected], value=ast.Constant(multiplicand ** multiplication_depth),
                    type_ignores=[]))
+            function_statements.append(self.generate_assert_equality_expression(actual, expected))
         if isinstance(generator, SummationGenerator):
             actual_value = ast.Call(
                 func=ast.Name(f'random_api_combination.flaky_summation_{function_identifier}_combination_{generator_index}'),
@@ -78,6 +79,7 @@ class RandomApiCombinationGenerator(RandomApiGenerator):
                    type_ignores=[]),)
             function_statements.append(ast.Assign(targets=[expected], value=ast.Constant(summation_depth * summand),
                    type_ignores=[]))
+            function_statements.append(self.generate_assert_equality_expression(actual, expected))
         if isinstance(generator, ArithmeticalGenerator):
             actual_value = ast.Call(
                 func=ast.Name(f'random_api_combination.flaky_arithmetical_{function_identifier}_combination_{generator_index}'),
@@ -86,15 +88,6 @@ class RandomApiCombinationGenerator(RandomApiGenerator):
                    type_ignores=[]),)
             function_statements.append(ast.Assign(targets=[expected], value=generator.arithmetical_expression,
                    type_ignores=[]))
+            function_statements.append(self.generate_assert_equality_expression(actual, expected))
 
-
-
-        test_function = ast.FunctionDef(
-            'test_combination_' + function_identifier,
-            ast.arguments([], [], defaults=[]),
-            function_statements,
-            []
-        )
-
-
-        return ast.Module([test_function])
+        return function_statements
