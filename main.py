@@ -38,14 +38,15 @@ def main():
         if category == 'random_api':
             # Instantiate file writer objects for each category to write them to separate file such that for example all
             # randomness functions, tests, test order dependent functions and tests are in dedicated file respectively
-            test_file_writer = TestFileWriter(module_name=category)
-            function_file_writer = FunctionFileWriter(module_name=category)
+
 
             # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
             for kind in flakiness_category_generators[category]:
-                test_statements = [ast.Import(names=[ast.alias(category)])]
-
                 if kind == 'summation':
+                    test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
+                    test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
+                    function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+
                     generator = flakiness_category_generators[category][kind]
                     function_statements = [ast.Import(names=[ast.alias('numpy')])]
 
@@ -65,10 +66,15 @@ def main():
 
                     test_file_writer.write_function(astor.to_source(tests_module))
                     function_file_writer.write_function(astor.to_source(functions_module))
+                    test_file_writer.close()
+                    function_file_writer.close()
 
                 if kind == 'multiplication':
-                    test_statements = []
-                    function_statements = []
+                    test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
+                    test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
+                    function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+
+                    function_statements = [ast.Import(names=[ast.alias('numpy')])]
                     generator = flakiness_category_generators[category][kind]
 
                     for i in range(10):
@@ -87,17 +93,23 @@ def main():
 
                     test_file_writer.write_function(astor.to_source(tests_module))
                     function_file_writer.write_function(astor.to_source(functions_module))
+                    test_file_writer.close()
+                    function_file_writer.close()
 
                 if kind == 'arithmetical':
-                    test_statements = []
-                    function_statements = []
-                    generator = flakiness_category_generators[category][kind]
+                    test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
+                    test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
+                    function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
 
+                    function_statements = [ast.Import(names=[ast.alias('numpy')])]
+                    generator = flakiness_category_generators[category][kind]
+                    max_expression_count = \
+                        (generator_builder.data)['random_api']["arithmetical"]["max_expression_depth"]
 
                     for i in range(10):
                         function_identifier = uuid.uuid4().hex
-
-                        func_tree = generator.generate_flaky_function_tree(function_identifier)
+                        expression_count = random.randint(1, max_expression_count)
+                        func_tree = generator.generate_flaky_function_tree(expression_count, function_identifier)
                         test_tree = generator.generate_test_tree(function_identifier)
 
                         test_statements.append(test_tree)
@@ -108,9 +120,44 @@ def main():
 
                     test_file_writer.write_function(astor.to_source(tests_module))
                     function_file_writer.write_function(astor.to_source(functions_module))
+                    test_file_writer.close()
+                    function_file_writer.close()
 
-            test_file_writer.close()
-            function_file_writer.close()
+                if kind == 'combination':
+                    test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
+                    test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
+                    function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+
+                    function_statements = [ast.Import(names=[ast.alias('numpy')])]
+                    generator = flakiness_category_generators[category][kind]
+                    max_multiplication_depth = \
+                        (generator_builder.data)['random_api']["combination"]["multiplication"]["max_multiplication_depth"]
+                    multiplicand_upper_bound = \
+                        (generator_builder.data)['random_api']["combination"]["multiplication"]["max_multiplication_depth"]
+                    max_summation_depth = \
+                        (generator_builder.data)['random_api']["combination"]["summation"]["max_summation_depth"]
+                    max_expression_count = \
+                        (generator_builder.data)['random_api']["combination"]["arithmetical"]["max_expression_depth"]
+
+                    function_identifier = uuid.uuid4().hex
+
+                    func_tree = generator.generate_flaky_function_tree(
+                        max_summation_depth,
+                        max_multiplication_depth,
+                        function_identifier
+                    )
+                    test_tree = generator.generate_test_tree(function_identifier)
+
+                    test_statements.append(test_tree)
+                    function_statements.append(func_tree)
+
+                    functions_module = ast.Module(body=function_statements)
+                    tests_module = ast.Module(body=test_statements)
+
+                    test_file_writer.write_function(astor.to_source(tests_module))
+                    function_file_writer.write_function(astor.to_source(functions_module))
+                    test_file_writer.close()
+                    function_file_writer.close()
 
         if category == 'test_order_dependent':
             for kind in flakiness_category_generators[category]:
@@ -234,7 +281,7 @@ def main():
                         test_file_writer.close()
                         class_definition_file_writer.close()
 
-    run_test_suite()
+    #run_test_suite()
 
 def cleanup_old_testsuite():
     stream = os.popen('rm -rf testsuite')

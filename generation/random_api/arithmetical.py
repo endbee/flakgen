@@ -7,15 +7,14 @@ from generation.random_api.random_api import RandomApiGenerator
 class ArithmeticalGenerator(RandomApiGenerator):
     OPERATORS = [ast.Add(), ast.Mult(), ast.Div(), ast.Sub()]
 
-    def __init__(self, expression_count, flakiness_prob):
+    def __init__(self, flakiness_prob):
         self.arithmetical_expression = None
-        self.expression_count = expression_count
         self.flakiness_prob = flakiness_prob
 
     # Generates function that calculates some flaky arithmetical expression
-    def generate_flaky_function_tree(self, function_identifier):
+    def generate_flaky_function_tree(self, expression_count, function_identifier):
         # Safe the non-flaky expression to have comparison base
-        self.arithmetical_expression, statements = self.generate_arithmetical_expression()
+        self.arithmetical_expression, statements = self.generate_arithmetical_expression(expression_count)
 
         statements.append(ast.Return(self.make_arithmetical_expression_flaky()))
 
@@ -30,7 +29,7 @@ class ArithmeticalGenerator(RandomApiGenerator):
     def generate_test_tree(self, function_identifier):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name('random_api.flaky_arithmetical_' + function_identifier), args=[], keywords=[])
+        actual_value = ast.Call(func=ast.Name('random_api_arithmetical.flaky_arithmetical_' + function_identifier), args=[], keywords=[])
 
         return ast.FunctionDef(
             'test_arithmetical_' + function_identifier,
@@ -54,7 +53,7 @@ class ArithmeticalGenerator(RandomApiGenerator):
 
     # Generates expression where random numbers are concatinated with random airthmetical operators as often as the
     # expression_count indicates like, expression_count=4: 3 - 2 - 4 * 5
-    def generate_arithmetical_expression(self):
+    def generate_arithmetical_expression(self, expression_count):
         statements = []
         result = ast.Name('result')
 
@@ -68,7 +67,7 @@ class ArithmeticalGenerator(RandomApiGenerator):
         assignment = ast.Assign([result], arithmetical_expression)
         statements.append(assignment)
 
-        for i in range(self.expression_count - 1):
+        for i in range(expression_count - 1):
             operand = self.get_random_operand()
             operator = self.get_random_binary_operator()
             arithmetical_expression = \

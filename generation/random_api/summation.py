@@ -45,7 +45,7 @@ class SummationGenerator(RandomApiGenerator):
     def generate_test_tree(self, summand, summation_depth, function_identifier):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name('random_api.flaky_summation_' + function_identifier), args=[ast.Constant(summand)], keywords=[])
+        actual_value = ast.Call(func=ast.Name('random_api_summation.flaky_summation_' + function_identifier), args=[ast.Constant(summand)], keywords=[])
 
         statements = [
             ast.Assign(targets=[actual], value=actual_value,

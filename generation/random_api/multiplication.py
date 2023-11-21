@@ -47,7 +47,7 @@ class MultiplicationGenerator(RandomApiGenerator):
     def generate_test_tree(self, multiplicand, multiplication_depth, funciton_identifier):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name('random_api.flaky_multiplication_' + funciton_identifier), args=[ast.Constant(multiplicand)], keywords=[])
+        actual_value = ast.Call(func=ast.Name('random_api_multiplication.flaky_multiplication_' + funciton_identifier), args=[ast.Constant(multiplicand)], keywords=[])
 
 
         return ast.FunctionDef(

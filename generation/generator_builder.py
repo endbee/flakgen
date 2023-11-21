@@ -4,6 +4,7 @@ import sys
 import generation.random_api.arithmetical
 import generation.random_api.multiplication
 import generation.random_api.summation
+import generation.random_api.combination
 import generation.test_order_dependent.basic_brittle_state_setter
 import generation.test_order_dependent.basic_victim_polluter
 import generation.test_order_dependent.classes_brittle_state_setter
@@ -33,8 +34,18 @@ class GeneratorBuilder:
                     self.data['random_api']["multiplication"]["flakiness_prob"]
                 ),
                 'arithmetical': generation.random_api.arithmetical.ArithmeticalGenerator(
-                    self.data['random_api']["arithmetical"]["expression_count"],
                     self.data['random_api']["arithmetical"]["flakiness_prob"]
+                ),
+                'combination': generation.random_api.combination.RandomApiCombinationGenerator(
+                    generation.random_api.summation.SummationGenerator(
+                        self.data['random_api']["combination"]["summation"]["flakiness_prob"]
+                    ),
+                    generation.random_api.multiplication.MultiplicationGenerator(
+                        self.data['random_api']["combination"]["multiplication"]["flakiness_prob"]
+                    ),
+                    generation.random_api.arithmetical.ArithmeticalGenerator(
+                        self.data['random_api']["combination"]["arithmetical"]["flakiness_prob"]
+                    )
                 )
             },
             'test_order_dependent': {
