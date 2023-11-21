@@ -19,10 +19,12 @@
       },
       "multiplication": {
         "max_multiplication_depth":  10,
+        "max_multiplicand": 10,
         "flakiness_prob":  0.5
       },
       "summation": {
         "max_summation_depth":  10,
+        "max_summand": 10,
         "flakiness_prob":  0.5
       }
     }

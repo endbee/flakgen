@@ -130,26 +130,53 @@ def main():
 
                     function_statements = [ast.Import(names=[ast.alias('numpy')])]
                     generator = flakiness_category_generators[category][kind]
+
                     max_multiplication_depth = \
-                        (generator_builder.data)['random_api']["combination"]["multiplication"]["max_multiplication_depth"]
-                    multiplicand_upper_bound = \
                         (generator_builder.data)['random_api']["combination"]["multiplication"]["max_multiplication_depth"]
                     max_summation_depth = \
                         (generator_builder.data)['random_api']["combination"]["summation"]["max_summation_depth"]
-                    max_expression_count = \
+                    max_expression_depth = \
                         (generator_builder.data)['random_api']["combination"]["arithmetical"]["max_expression_depth"]
+                    max_multiplicand = \
+                        (generator_builder.data)['random_api']["combination"]["multiplication"][
+                            "max_multiplicand"]
+                    max_summand = \
+                        (generator_builder.data)['random_api']["combination"]["summation"][
+                            "max_summand"]
 
                     function_identifier = uuid.uuid4().hex
+                    function_index = 0
 
-                    func_tree = generator.generate_flaky_function_tree(
-                        max_summation_depth,
-                        max_multiplication_depth,
-                        function_identifier
-                    )
-                    test_tree = generator.generate_test_tree(function_identifier)
+                    for i in range(3):
+                        multiplication_depth = random.randint(1, max_multiplication_depth)
+                        summation_depth = random.randint(1, max_summation_depth)
+                        expression_depth = random.randint(1, max_expression_depth)
+                        multiplicand = random.randint(1, max_multiplicand)
+                        summand = random.randint(1, max_summand)
 
-                    test_statements.append(test_tree)
-                    function_statements.append(func_tree)
+                        random_generator = generator.get_random_generator()
+
+                        func_tree = generator.generate_flaky_function_tree(
+                            summation_depth,
+                            multiplication_depth,
+                            expression_depth,
+                            function_identifier,
+                            function_index,
+                            random_generator
+                        )
+                        test_tree = generator.generate_test_tree(
+                            summation_depth,
+                            multiplication_depth,
+                            summand,
+                            multiplicand,
+                            function_identifier,
+                            function_index,
+                            random_generator
+                        )
+
+                        test_statements.append(test_tree)
+                        function_statements.append(func_tree)
+                        function_index += 1
 
                     functions_module = ast.Module(body=function_statements)
                     tests_module = ast.Module(body=test_statements)
