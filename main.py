@@ -47,13 +47,18 @@ def main():
                     test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
                     function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
 
+                    max_summation_depth = \
+                        (generator_builder.data)['random_api']["summation"]["max_summation_depth"]
+                    max_summand = \
+                        (generator_builder.data)['random_api']["summation"]["max_summand"]
+
                     generator = flakiness_category_generators[category][kind]
                     function_statements = [ast.Import(names=[ast.alias('numpy')])]
 
-                    for i in range(10):
+                    for i in range(25):
                         function_identifier = uuid.uuid4().hex
-                        summation_depth = random.randint(1,10)
-                        summand = random.randint(1, 10)
+                        summation_depth = random.randint(1, max_summation_depth)
+                        summand = random.randint(1, max_summand)
 
                         func_tree = generator.generate_flaky_function_tree(summation_depth, function_identifier)
                         test_tree = generator.generate_test_tree(summand, summation_depth, function_identifier)
@@ -74,13 +79,18 @@ def main():
                     test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
                     function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
 
+                    max_multiplication_depth = \
+                        (generator_builder.data)['random_api']["multiplication"]["max_multiplication_depth"]
+                    max_multiplicand = \
+                        (generator_builder.data)['random_api']["multiplication"]["max_multiplicand"]
+
                     function_statements = [ast.Import(names=[ast.alias('numpy')])]
                     generator = flakiness_category_generators[category][kind]
 
-                    for i in range(10):
+                    for i in range(25):
                         function_identifier = uuid.uuid4().hex
-                        multiplication_depth = random.randint(1,5)
-                        multiplicand = random.randint(1, 10)
+                        multiplication_depth = random.randint(1, max_multiplication_depth)
+                        multiplicand = random.randint(1, max_multiplicand)
 
                         func_tree = generator.generate_flaky_function_tree(multiplication_depth, function_identifier)
                         test_tree = generator.generate_test_tree(multiplicand, multiplication_depth, function_identifier)
@@ -106,7 +116,7 @@ def main():
                     max_expression_count = \
                         (generator_builder.data)['random_api']["arithmetical"]["max_expression_depth"]
 
-                    for i in range(10):
+                    for i in range(25):
                         function_identifier = uuid.uuid4().hex
                         expression_count = random.randint(1, max_expression_count)
                         func_tree = generator.generate_flaky_function_tree(expression_count, function_identifier)
@@ -202,7 +212,7 @@ def main():
         if category == 'test_order_dependent':
             for kind in flakiness_category_generators[category]:
                 if kind == 'basic_victim_polluter':
-                    for i in range(10):
+                    for i in range(25):
                         file_identifier = uuid.uuid4().hex
 
                         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
@@ -214,7 +224,7 @@ def main():
 
                         test_file_writer.close()
                 if kind == 'basic_brittle_state_setter':
-                    for i in range(10):
+                    for i in range(25):
                         file_identifier = uuid.uuid4().hex
 
                         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
@@ -226,7 +236,7 @@ def main():
 
                         test_file_writer.close()
                 if kind == 'classes_victim_polluter':
-                    for i in range(10):
+                    for i in range(25):
                         class_identifier = uuid.uuid4().hex
                         state_identifier = random.choice(string.ascii_lowercase)
                         number_of_tests = random.randint(2, 5)
@@ -253,7 +263,7 @@ def main():
                         test_file_writer.close()
                         class_definition_file_writer.close()
                 if kind == 'classes_brittle_state_setter':
-                    for i in range(10):
+                    for i in range(25):
                         class_identifier = uuid.uuid4().hex
                         state_identifier = random.choice(string.ascii_lowercase)
                         dummy_function_return = random.randint(0, 100)
@@ -281,7 +291,7 @@ def main():
                         test_file_writer.close()
                         class_definition_file_writer.close()
                 if kind == 'multiple_classes_victim_polluter':
-                    for i in range(10):
+                    for i in range(25):
                         module_identifier = uuid.uuid4().hex
                         class_a_identifier = uuid.uuid4().hex
                         state_a_identifier = random.choice(string.ascii_lowercase)
@@ -321,7 +331,7 @@ def main():
                         test_file_writer.close()
                         class_definition_file_writer.close()
 
-    #run_test_suite()
+    run_test_suite()
 
 def cleanup_old_testsuite():
     stream = os.popen('rm -rf testsuite')
