@@ -44,6 +44,9 @@
     },
     "classes_victim_polluter": {
       "flakiness_prob":  0.5
+    },
+    "multiple_classes_victim_polluter": {
+      "max_class_count": 25
     }
   }
 }
