@@ -18,7 +18,7 @@ class GeneratorBuilder:
     def __init__(self, config_file_path):
         try:
             with open(config_file_path) as config_file:
-                self.data = json.load(config_file)
+                self.config_data = json.load(config_file)
         except OSError as e:
             print(f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
             sys.exit()
@@ -28,23 +28,23 @@ class GeneratorBuilder:
         return {
             'random_api': {
                 'summation': generation.random_api.summation.SummationGenerator(
-                    self.data['random_api']["summation"]["flakiness_prob"]
+                    self.config_data['random_api']["summation"]["flakiness_prob"]
                 ),
                 'multiplication': generation.random_api.multiplication.MultiplicationGenerator(
-                    self.data['random_api']["multiplication"]["flakiness_prob"]
+                    self.config_data['random_api']["multiplication"]["flakiness_prob"]
                 ),
                 'arithmetical': generation.random_api.arithmetical.ArithmeticalGenerator(
-                    self.data['random_api']["arithmetical"]["flakiness_prob"]
+                    self.config_data['random_api']["arithmetical"]["flakiness_prob"]
                 ),
                 'combination': generation.random_api.combination.RandomApiCombinationGenerator(
                     generation.random_api.summation.SummationGenerator(
-                        self.data['random_api']["combination"]["summation"]["flakiness_prob"]
+                        self.config_data['random_api']["combination"]["summation"]["flakiness_prob"]
                     ),
                     generation.random_api.multiplication.MultiplicationGenerator(
-                        self.data['random_api']["combination"]["multiplication"]["flakiness_prob"]
+                        self.config_data['random_api']["combination"]["multiplication"]["flakiness_prob"]
                     ),
                     generation.random_api.arithmetical.ArithmeticalGenerator(
-                        self.data['random_api']["combination"]["arithmetical"]["flakiness_prob"]
+                        self.config_data['random_api']["combination"]["arithmetical"]["flakiness_prob"]
                     )
                 )
             },

@@ -1,7 +1,7 @@
 import os
 import argparse
 
-from randomization.randomizer import Randomizer
+from randomization.testsuiterandomizer import TestSuiteRandomizer
 
 def main():
     cleanup_old_testsuite()
@@ -18,8 +18,8 @@ def main():
     if not os.path.exists('testsuite'):
         os.makedirs('testsuite')
 
-    randomizer = Randomizer()
-    randomizer.generateRandomizedTestSuite(config_file_path)
+    randomizer = TestSuiteRandomizer()
+    randomizer.generate_randomized_test_suite(config_file_path)
 
     run_test_suite()
 
