@@ -80,7 +80,9 @@ class TestSuiteRandomizer():
                     self.generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(
                         category,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        config_data,
+                        total_test_count
                     )
 
                 if kind == 'classes_victim_polluter':
@@ -206,16 +208,32 @@ class TestSuiteRandomizer():
             test_file_writer.close()
             class_definition_file_writer.close()
 
-    def generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(self, category,
-                                                                                       flakiness_category_generators,
-                                                                                       kind):
-        for i in range(25):
+    def generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(
+            self,
+            category,
+            flakiness_category_generators,
+            kind,
+            config_data,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        # we have to divide by two because becuause for each state to be set there are always 2 tests generated
+        tests_share = int(int(total_test_count * relative_tests_share)/2)
+
+        generated_tests = 0
+        while generated_tests < tests_share:
+            number_of_tests = random.randint(2, 5)
+
+            if (generated_tests + number_of_tests) > tests_share:
+                number_of_tests = tests_share - generated_tests
+
+            generated_tests += number_of_tests
             file_identifier = uuid.uuid4().hex
 
             test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
             generator = flakiness_category_generators[category][kind]
 
-            test_tree = generator.generate_test_tree(states_to_be_set=random.randint(2, 5))
+            test_tree = generator.generate_test_tree(states_to_be_set=number_of_tests)
 
             test_file_writer.write_function(astor.to_source(test_tree))
 
