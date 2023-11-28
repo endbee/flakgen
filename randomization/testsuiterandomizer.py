@@ -89,7 +89,9 @@ class TestSuiteRandomizer():
                     self.generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(
                         category,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        config_data,
+                        total_test_count
                     )
 
                 if kind == 'classes_brittle_state_setter':
@@ -178,13 +180,27 @@ class TestSuiteRandomizer():
             test_file_writer.close()
             class_definition_file_writer.close()
 
-    def generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(self, category,
-                                                                                    flakiness_category_generators,
-                                                                                    kind):
-        for i in range(25):
+    def generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(
+            self,
+            category,
+            flakiness_category_generators,
+            kind,
+            config_data,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generated_tests = 0
+        while generated_tests < tests_share:
             class_identifier = uuid.uuid4().hex
             state_identifier = random.choice(string.ascii_lowercase)
             number_of_tests = random.randint(2, 5)
+
+            if (generated_tests + number_of_tests) > tests_share:
+                number_of_tests = tests_share - generated_tests
+
+            generated_tests += number_of_tests
 
             module_name = f'{category}_{kind}_{class_identifier}'
 
