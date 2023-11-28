@@ -1,5 +1,6 @@
 import os
 import argparse
+import shutil
 
 from randomization.testsuiterandomizer import TestSuiteRandomizer
 
@@ -24,10 +25,7 @@ def main():
     #run_test_suite()
 
 def cleanup_old_testsuite():
-    stream = os.popen('rm -rf testsuite')
-    output = stream.read()
-    print(output)
-
+    shutil.rmtree('testsuite')
 
 def run_test_suite():
     stream = os.popen('pytest testsuite --random-order')
