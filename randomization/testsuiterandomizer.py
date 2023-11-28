@@ -98,7 +98,9 @@ class TestSuiteRandomizer():
                     self.generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(
                         category,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        config_data,
+                        total_test_count
                     )
 
                 if kind == 'multiple_classes_victim_polluter':
@@ -106,15 +108,26 @@ class TestSuiteRandomizer():
                         category,
                         config_data,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        total_test_count
                     )
 
-    def generate_randomized_test_order_dependent_multiple_classes_victim_polluter(self, category, config_data,
-                                                                                  flakiness_category_generators, kind):
+    def generate_randomized_test_order_dependent_multiple_classes_victim_polluter(
+            self,
+            category,
+            config_data,
+            flakiness_category_generators,
+            kind,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generated_tests = 0
         max_class_count = \
             (config_data)['test_order_dependent']["multiple_classes_victim_polluter"][
                 "max_class_count"]
-        for i in range(25):
+        while generated_tests < tests_share:
             module_identifier = uuid.uuid4().hex
 
             class_count = random.randint(1, max_class_count)
@@ -126,6 +139,11 @@ class TestSuiteRandomizer():
                 class_state_identifiers_map[class_identifier] = state_identifier
 
             number_of_tests = random.randint(2, 5)
+
+            if (generated_tests + number_of_tests) > tests_share:
+                number_of_tests = tests_share - generated_tests
+
+            generated_tests += number_of_tests
 
             module_name = f'{category}_{kind}_{module_identifier}'
 
@@ -149,13 +167,24 @@ class TestSuiteRandomizer():
             test_file_writer.close()
             class_definition_file_writer.close()
 
-    def generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(self, category,
-                                                                                         flakiness_category_generators,
-                                                                                         kind):
-        for i in range(25):
+    def generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(
+            self,
+            category,
+            flakiness_category_generators,
+            kind,
+            config_data,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generated_tests = 0
+        while generated_tests < tests_share:
             class_identifier = uuid.uuid4().hex
             state_identifier = random.choice(string.ascii_lowercase)
             dummy_function_return = random.randint(0, 100)
+
+            generated_tests += 2
 
             module_name = f'{category}_{kind}_{class_identifier}'
 
