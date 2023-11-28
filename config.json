@@ -1,20 +1,26 @@
 {
+  "max_total_test_count": 550,
+  "min_total_test_count": 500,
   "random_api": {
     "summation": {
+      "test_number_share": 0.1,
       "max_summation_depth":  50,
       "max_summand": 1000,
       "flakiness_prob":  0.5
     },
     "multiplication": {
+      "test_number_share": 0.1,
       "max_multiplication_depth":  100,
       "max_multiplicand": 10,
       "flakiness_prob":  0.5
     },
     "arithmetical": {
+      "test_number_share": 0.1,
       "max_expression_depth":  100,
       "flakiness_prob":  0.5
     },
     "combination": {
+      "test_number_share": 0.1,
       "max_number_of_assertions": 10,
       "arithmetical": {
         "max_expression_depth":  100,
@@ -34,18 +40,23 @@
   },
   "test_order_dependent": {
     "basic_victim_polluter": {
+      "test_number_share": 0.1,
       "flakiness_prob":  0.5
     },
     "basic_brittle_state_setter": {
+      "test_number_share": 0.1,
       "flakiness_prob":  0.5
     },
     "classes_brittle_state_setter": {
+      "test_number_share": 0.1,
       "flakiness_prob":  0.5
     },
     "classes_victim_polluter": {
+      "test_number_share": 0.1,
       "flakiness_prob":  0.5
     },
     "multiple_classes_victim_polluter": {
+      "test_number_share": 0.2,
       "max_class_count": 25
     }
   }

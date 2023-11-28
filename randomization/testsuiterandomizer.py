@@ -3,6 +3,7 @@ import random
 import string
 import astor
 import uuid
+import sys
 
 from generation.generator_builder import GeneratorBuilder
 from file_writing.test_file_writer import TestFileWriter
@@ -18,79 +19,81 @@ class TestSuiteRandomizer():
         # config properties to respective generator
         flakiness_category_generators = generator_builder.build_generator_dict()
 
+        self.assert_test_shares_add_to_one(config_data, flakiness_category_generators)
 
         for category in flakiness_category_generators:
-            if category == 'random_api':
-                # Instantiate file writer objects for each category to write them to separate file such that for example all
-                # randomness functions, tests, test order dependent functions and tests are in dedicated file respectively
+            # Instantiate file writer objects for each category to write them to separate file such that for example all
+            # randomness functions, tests, test order dependent functions and tests are in dedicated file respectively
 
-                # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
-                for kind in flakiness_category_generators[category]:
-                    if kind == 'summation':
-                        self.generate_randomized_random_api_summation_test_suite(
-                            category,
-                            config_data,
-                            flakiness_category_generators,
-                            kind
-                        )
+            # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
+            for kind in flakiness_category_generators[category]:
+                if kind == 'summation':
+                    self.generate_randomized_random_api_summation_test_suite(
+                        category,
+                        config_data,
+                        flakiness_category_generators,
+                        kind
+                    )
 
-                    if kind == 'multiplication':
-                        self.generate_randomized_random_api_multiplication_test_suite(
-                            category,
-                            config_data,
-                            flakiness_category_generators,
-                            kind
-                        )
+                if kind == 'multiplication':
+                    self.generate_randomized_random_api_multiplication_test_suite(
+                        category,
+                        config_data,
+                        flakiness_category_generators,
+                        kind
+                    )
 
-                    if kind == 'arithmetical':
-                        self.generate_randomized_random_api_arithmetical_test_suite(category, config_data,
-                                                                                    flakiness_category_generators, kind)
+                if kind == 'arithmetical':
+                    self.generate_randomized_random_api_arithmetical_test_suite(
+                        category,
+                        config_data,
+                        flakiness_category_generators,
+                        kind
+                    )
 
-                    if kind == 'combination':
-                        self.generate_randomized_random_api_combination_test_suite(
-                            category,
-                            config_data,
-                            flakiness_category_generators,
-                            kind
-                        )
+                if kind == 'combination':
+                    self.generate_randomized_random_api_combination_test_suite(
+                        category,
+                        config_data,
+                        flakiness_category_generators,
+                        kind
+                    )
 
-            if category == 'test_order_dependent':
-                for kind in flakiness_category_generators[category]:
-                    if kind == 'basic_victim_polluter':
-                        self.generate_randomized_test_order_dependent_basic_victim_polluter_test_suite(
-                            category,
-                           flakiness_category_generators,
-                           kind
-                        )
+                if kind == 'basic_victim_polluter':
+                    self.generate_randomized_test_order_dependent_basic_victim_polluter_test_suite(
+                        category,
+                       flakiness_category_generators,
+                       kind
+                    )
 
-                    if kind == 'basic_brittle_state_setter':
-                        self.generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(
-                            category,
-                            flakiness_category_generators,
-                            kind
-                        )
+                if kind == 'basic_brittle_state_setter':
+                    self.generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(
+                        category,
+                        flakiness_category_generators,
+                        kind
+                    )
 
-                    if kind == 'classes_victim_polluter':
-                        self.generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(
-                            category,
-                            flakiness_category_generators,
-                            kind
-                        )
+                if kind == 'classes_victim_polluter':
+                    self.generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(
+                        category,
+                        flakiness_category_generators,
+                        kind
+                    )
 
-                    if kind == 'classes_brittle_state_setter':
-                        self.generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(
-                            category,
-                            flakiness_category_generators,
-                            kind
-                        )
+                if kind == 'classes_brittle_state_setter':
+                    self.generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(
+                        category,
+                        flakiness_category_generators,
+                        kind
+                    )
 
-                    if kind == 'multiple_classes_victim_polluter':
-                        self.generate_randomized_test_order_dependent_multiple_classes_victim_polluter(
-                            category,
-                            config_data,
-                            flakiness_category_generators,
-                            kind
-                        )
+                if kind == 'multiple_classes_victim_polluter':
+                    self.generate_randomized_test_order_dependent_multiple_classes_victim_polluter(
+                        category,
+                        config_data,
+                        flakiness_category_generators,
+                        kind
+                    )
 
     def generate_randomized_test_order_dependent_multiple_classes_victim_polluter(self, category, config_data,
                                                                                   flakiness_category_generators, kind):
@@ -222,8 +225,13 @@ class TestSuiteRandomizer():
 
             test_file_writer.close()
 
-    def generate_randomized_random_api_combination_test_suite(self, category, config_data,
-                                                              flakiness_category_generators, kind):
+    def generate_randomized_random_api_combination_test_suite(
+            self,
+            category,
+            config_data,
+            flakiness_category_generators,
+            kind
+    ):
         max_multiplication_depth = \
             (config_data)['random_api']["combination"]["multiplication"][
                 "max_multiplication_depth"]
@@ -240,12 +248,22 @@ class TestSuiteRandomizer():
                 "max_summand"]
         max_number_of_assertions = \
             (config_data)['random_api']["combination"]["max_number_of_assertions"]
+        max_total_test_count = config_data['max_total_test_count']
+        min_total_test_count = config_data['min_total_test_count']
+        total_test_count = random.randint(min_total_test_count, max_total_test_count)
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
         function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
+
         generator = flakiness_category_generators[category][kind]
-        for n in range(10):
+
+        for n in range(tests_share):
             number_of_assertions = random.randint(1, max_number_of_assertions)
             function_identifier = uuid.uuid4().hex
             function_index = 0
@@ -297,16 +315,30 @@ class TestSuiteRandomizer():
         test_file_writer.close()
         function_file_writer.close()
 
-    def generate_randomized_random_api_arithmetical_test_suite(self, category, config_data,
-                                                               flakiness_category_generators, kind):
-        test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
+    def generate_randomized_random_api_arithmetical_test_suite(
+            self,
+            category,
+            config_data,
+            flakiness_category_generators,
+            kind
+    ):
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
         function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
+        test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
+
         generator = flakiness_category_generators[category][kind]
+
         max_expression_count = \
             (config_data)['random_api']["arithmetical"]["max_expression_depth"]
-        for i in range(25):
+        max_total_test_count = config_data['max_total_test_count']
+        min_total_test_count = config_data['min_total_test_count']
+        total_test_count = random.randint(min_total_test_count, max_total_test_count)
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
             expression_count = random.randint(1, max_expression_count)
             func_tree = generator.generate_flaky_function_tree(expression_count, function_identifier)
@@ -321,18 +353,31 @@ class TestSuiteRandomizer():
         test_file_writer.close()
         function_file_writer.close()
 
-    def generate_randomized_random_api_multiplication_test_suite(self, category, config_data, flakiness_category_generators,
-                                                                 kind):
+    def generate_randomized_random_api_multiplication_test_suite(
+            self,
+            category,
+            config_data,
+            flakiness_category_generators,
+            kind
+    ):
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
         function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+
         max_multiplication_depth = \
             (config_data)['random_api']["multiplication"]["max_multiplication_depth"]
         max_multiplicand = \
             (config_data)['random_api']["multiplication"]["max_multiplicand"]
+        max_total_test_count = config_data['max_total_test_count']
+        min_total_test_count = config_data['min_total_test_count']
+        total_test_count = random.randint(min_total_test_count, max_total_test_count)
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
         generator = flakiness_category_generators[category][kind]
-        for i in range(25):
+
+        for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
             multiplication_depth = random.randint(1, max_multiplication_depth)
             multiplicand = random.randint(1, max_multiplicand)
@@ -355,13 +400,22 @@ class TestSuiteRandomizer():
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
         function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+
+        max_total_test_count = config_data['max_total_test_count']
+        min_total_test_count = config_data['min_total_test_count']
+        total_test_count = random.randint(min_total_test_count, max_total_test_count)
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
         max_summation_depth = \
             (config_data)['random_api']["summation"]["max_summation_depth"]
         max_summand = \
             (config_data)['random_api']["summation"]["max_summand"]
         generator = flakiness_category_generators[category][kind]
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
-        for i in range(25):
+
+
+        for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
             summation_depth = random.randint(1, max_summation_depth)
             summand = random.randint(1, max_summand)
@@ -377,3 +431,13 @@ class TestSuiteRandomizer():
         function_file_writer.write_function(astor.to_source(functions_module))
         test_file_writer.close()
         function_file_writer.close()
+
+    def assert_test_shares_add_to_one(self, config_data, flakiness_category_generators):
+        total_test_number_share = 0
+        for category in flakiness_category_generators:
+            for kind in flakiness_category_generators[category]:
+                total_test_number_share += config_data[category][kind]['test_number_share']
+
+        if total_test_number_share != 1 :
+            print(f'Test number share does not add up to 1, instead: {total_test_number_share}', file=sys.stderr)
+            sys.exit()

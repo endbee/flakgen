@@ -21,7 +21,7 @@ def main():
     randomizer = TestSuiteRandomizer()
     randomizer.generate_randomized_test_suite(config_file_path)
 
-    run_test_suite()
+    #run_test_suite()
 
 def cleanup_old_testsuite():
     stream = os.popen('rm -rf testsuite')
