@@ -21,6 +21,10 @@ class TestSuiteRandomizer():
 
         self.assert_test_shares_add_to_one(config_data, flakiness_category_generators)
 
+        max_total_test_count = config_data['max_total_test_count']
+        min_total_test_count = config_data['min_total_test_count']
+        total_test_count = random.randint(min_total_test_count, max_total_test_count)
+
         for category in flakiness_category_generators:
             # Instantiate file writer objects for each category to write them to separate file such that for example all
             # randomness functions, tests, test order dependent functions and tests are in dedicated file respectively
@@ -32,7 +36,8 @@ class TestSuiteRandomizer():
                         category,
                         config_data,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        total_test_count
                     )
 
                 if kind == 'multiplication':
@@ -40,7 +45,8 @@ class TestSuiteRandomizer():
                         category,
                         config_data,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        total_test_count
                     )
 
                 if kind == 'arithmetical':
@@ -48,7 +54,8 @@ class TestSuiteRandomizer():
                         category,
                         config_data,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        total_test_count
                     )
 
                 if kind == 'combination':
@@ -56,35 +63,44 @@ class TestSuiteRandomizer():
                         category,
                         config_data,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        total_test_count
                     )
 
                 if kind == 'basic_victim_polluter':
                     self.generate_randomized_test_order_dependent_basic_victim_polluter_test_suite(
                         category,
-                       flakiness_category_generators,
-                       kind
+                        flakiness_category_generators,
+                        kind,
+                        config_data,
+                        total_test_count
                     )
 
                 if kind == 'basic_brittle_state_setter':
                     self.generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(
                         category,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        config_data,
+                        total_test_count
                     )
 
                 if kind == 'classes_victim_polluter':
                     self.generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(
                         category,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        config_data,
+                        total_test_count
                     )
 
                 if kind == 'classes_brittle_state_setter':
                     self.generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(
                         category,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        config_data,
+                        total_test_count
                     )
 
                 if kind == 'multiple_classes_victim_polluter':
@@ -92,15 +108,26 @@ class TestSuiteRandomizer():
                         category,
                         config_data,
                         flakiness_category_generators,
-                        kind
+                        kind,
+                        total_test_count
                     )
 
-    def generate_randomized_test_order_dependent_multiple_classes_victim_polluter(self, category, config_data,
-                                                                                  flakiness_category_generators, kind):
+    def generate_randomized_test_order_dependent_multiple_classes_victim_polluter(
+            self,
+            category,
+            config_data,
+            flakiness_category_generators,
+            kind,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generated_tests = 0
         max_class_count = \
             (config_data)['test_order_dependent']["multiple_classes_victim_polluter"][
                 "max_class_count"]
-        for i in range(25):
+        while generated_tests < tests_share:
             module_identifier = uuid.uuid4().hex
 
             class_count = random.randint(1, max_class_count)
@@ -112,6 +139,11 @@ class TestSuiteRandomizer():
                 class_state_identifiers_map[class_identifier] = state_identifier
 
             number_of_tests = random.randint(2, 5)
+
+            if (generated_tests + number_of_tests) > tests_share:
+                number_of_tests = tests_share - generated_tests
+
+            generated_tests += number_of_tests
 
             module_name = f'{category}_{kind}_{module_identifier}'
 
@@ -135,13 +167,24 @@ class TestSuiteRandomizer():
             test_file_writer.close()
             class_definition_file_writer.close()
 
-    def generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(self, category,
-                                                                                         flakiness_category_generators,
-                                                                                         kind):
-        for i in range(25):
+    def generate_randomized_test_order_dependent_classes_brittle_state_setter_test_suite(
+            self,
+            category,
+            flakiness_category_generators,
+            kind,
+            config_data,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generated_tests = 0
+        while generated_tests < tests_share:
             class_identifier = uuid.uuid4().hex
             state_identifier = random.choice(string.ascii_lowercase)
             dummy_function_return = random.randint(0, 100)
+
+            generated_tests += 2
 
             module_name = f'{category}_{kind}_{class_identifier}'
 
@@ -166,13 +209,27 @@ class TestSuiteRandomizer():
             test_file_writer.close()
             class_definition_file_writer.close()
 
-    def generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(self, category,
-                                                                                    flakiness_category_generators,
-                                                                                    kind):
-        for i in range(25):
+    def generate_randomized_test_order_dependent_classes_victim_polluter_test_suite(
+            self,
+            category,
+            flakiness_category_generators,
+            kind,
+            config_data,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generated_tests = 0
+        while generated_tests < tests_share:
             class_identifier = uuid.uuid4().hex
             state_identifier = random.choice(string.ascii_lowercase)
             number_of_tests = random.randint(2, 5)
+
+            if (generated_tests + number_of_tests) > tests_share:
+                number_of_tests = tests_share - generated_tests
+
+            generated_tests += number_of_tests
 
             module_name = f'{category}_{kind}_{class_identifier}'
 
@@ -196,30 +253,62 @@ class TestSuiteRandomizer():
             test_file_writer.close()
             class_definition_file_writer.close()
 
-    def generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(self, category,
-                                                                                       flakiness_category_generators,
-                                                                                       kind):
-        for i in range(25):
+    def generate_randomized_test_order_dependent_basic_brittle_state_setter_test_suite(
+            self,
+            category,
+            flakiness_category_generators,
+            kind,
+            config_data,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        # we have to divide by two because becuause for each state to be set there are always 2 tests generated
+        tests_share = int(int(total_test_count * relative_tests_share)/2)
+
+        generated_tests = 0
+        while generated_tests < tests_share:
+            number_of_tests = random.randint(2, 5)
+
+            if (generated_tests + number_of_tests) > tests_share:
+                number_of_tests = tests_share - generated_tests
+
+            generated_tests += number_of_tests
             file_identifier = uuid.uuid4().hex
 
             test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
             generator = flakiness_category_generators[category][kind]
 
-            test_tree = generator.generate_test_tree(states_to_be_set=random.randint(2, 5))
+            test_tree = generator.generate_test_tree(states_to_be_set=number_of_tests)
 
             test_file_writer.write_function(astor.to_source(test_tree))
 
             test_file_writer.close()
 
-    def generate_randomized_test_order_dependent_basic_victim_polluter_test_suite(self, category,
-                                                                                  flakiness_category_generators, kind):
-        for i in range(25):
+    def generate_randomized_test_order_dependent_basic_victim_polluter_test_suite(
+            self,
+            category,
+            flakiness_category_generators,
+            kind,
+            config_data,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generated_tests = 0
+        while generated_tests < tests_share:
+            number_of_tests = random.randint(2, 5)
+
+            if (generated_tests + number_of_tests) > tests_share:
+                number_of_tests = tests_share - generated_tests
+
+            generated_tests +=  number_of_tests
             file_identifier = uuid.uuid4().hex
 
             test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
             generator = flakiness_category_generators[category][kind]
 
-            test_tree = generator.generate_test_tree(number_of_tests=random.randint(2, 5))
+            test_tree = generator.generate_test_tree(number_of_tests=number_of_tests)
 
             test_file_writer.write_function(astor.to_source(test_tree))
 
@@ -230,7 +319,8 @@ class TestSuiteRandomizer():
             category,
             config_data,
             flakiness_category_generators,
-            kind
+            kind,
+            total_test_count
     ):
         max_multiplication_depth = \
             (config_data)['random_api']["combination"]["multiplication"][
@@ -248,9 +338,6 @@ class TestSuiteRandomizer():
                 "max_summand"]
         max_number_of_assertions = \
             (config_data)['random_api']["combination"]["max_number_of_assertions"]
-        max_total_test_count = config_data['max_total_test_count']
-        min_total_test_count = config_data['min_total_test_count']
-        total_test_count = random.randint(min_total_test_count, max_total_test_count)
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
 
@@ -320,7 +407,8 @@ class TestSuiteRandomizer():
             category,
             config_data,
             flakiness_category_generators,
-            kind
+            kind,
+            total_test_count
     ):
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
         function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
@@ -332,9 +420,6 @@ class TestSuiteRandomizer():
 
         max_expression_count = \
             (config_data)['random_api']["arithmetical"]["max_expression_depth"]
-        max_total_test_count = config_data['max_total_test_count']
-        min_total_test_count = config_data['min_total_test_count']
-        total_test_count = random.randint(min_total_test_count, max_total_test_count)
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
 
@@ -358,7 +443,8 @@ class TestSuiteRandomizer():
             category,
             config_data,
             flakiness_category_generators,
-            kind
+            kind,
+            total_test_count
     ):
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
@@ -368,9 +454,6 @@ class TestSuiteRandomizer():
             (config_data)['random_api']["multiplication"]["max_multiplication_depth"]
         max_multiplicand = \
             (config_data)['random_api']["multiplication"]["max_multiplicand"]
-        max_total_test_count = config_data['max_total_test_count']
-        min_total_test_count = config_data['min_total_test_count']
-        total_test_count = random.randint(min_total_test_count, max_total_test_count)
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
 
@@ -396,14 +479,18 @@ class TestSuiteRandomizer():
         test_file_writer.close()
         function_file_writer.close()
 
-    def generate_randomized_random_api_summation_test_suite(self, category, config_data, flakiness_category_generators, kind):
+    def generate_randomized_random_api_summation_test_suite(
+            self,
+            category,
+            config_data,
+            flakiness_category_generators,
+            kind,
+            total_test_count
+    ):
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
         function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
 
-        max_total_test_count = config_data['max_total_test_count']
-        min_total_test_count = config_data['min_total_test_count']
-        total_test_count = random.randint(min_total_test_count, max_total_test_count)
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
 
