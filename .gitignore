@@ -2,6 +2,7 @@ testsuite
 env
 .idea
 bin
+bin\\test_sample1.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
