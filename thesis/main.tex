@@ -1,0 +1,167 @@
+\documentclass[
+%%%%% Styles and Sizes
+%10pt,
+%11pt,
+%12pt,
+fancyheadings, % headings with seplines and logo
+%
+%%%%% Printing, Color and Binding
+%a4paper, 
+%a5paper,
+%twoside, % single sided printout
+%oneside, % duplex printout (default)
+%% binding correction is used to compensate for the paper lost during binding
+%% of the document
+%BCOR=0.7cm, % binding correction
+%nobcorignoretitle, % do not ignore BCOR for title page
+%% the following two options only concern the graphics included by the document
+%% class
+%grayscaletitle, % keep the title in grayscale
+%grayscalebody, % keep the rest of the document in grayscale
+%
+%%%%% expert options: your mileage may vary
+%baseclass=..., % special option to use a different document baseclass
+]{stsreprt}
+
+% Information for the Titlepage
+\author{Fin Bießler}
+\title{Randomized Generation of Flaky Test Suites}
+\date{\today}
+\subject{Bachelor Thesis}
+\professor{Prof. Dr. Sibylle Schupp}
+\advisor{Daniel Rashedi}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\newtheorem{definition}{Definition}
+
+% Font and Fontencoding Magic
+% FAQ: 
+% http://tex.stackexchange.com/questions/664/why-should-i-use-usepackaget1fontenc
+% http://en.wikipedia.org/wiki/Computer_Modern
+% http://tex.stackexchange.com/questions/1390/latin-modern-vs-cm-super
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+%\usepackage{fix-cm}
+
+% to generate some dummy text
+\usepackage{lipsum}
+
+\begin{document}
+\frontmatter
+\maketitle
+
+\chapter*{\centering \begin{normalsize}Abstract\end{normalsize}}
+\begin{quotation}
+\lipsum[1-3]
+\end{quotation}
+
+\tableofcontents
+
+\listoffigures{}
+
+\mainmatter
+
+
+
+\chapter{Introduction}
+\begin{itemize}
+    \item Domain
+    \item Problem description
+    \item Main approach/contribution
+    \item Related work
+    \item Outline
+\end{itemize}
+
+
+
+\chapter{Theoretical Background}
+The following chapter will cover necessary definitions and terms needed for the subsequent chapters of this thesis. 
+
+\section{Test-Cases and Test-Suites}
+Describe what Test-Cases and how they are combinded into Test-Suites and how they are used in real-life software projects.
+
+\section{Flaky Tests}
+Recall what Flaky Tests are.
+
+\section{Flakiness Categories}
+Luo et al. \cite{luo:2014} have stated that flakiness in test-suites always stems from one of 10 root causes. In the following subsections, the flakiness categories relevant for the approach presented in Chapter \ref{approach} will be described. In additions to that theoretical terms will be defined. 
+
+\subsection{Flaky Tests Due to Randomness}
+
+\subsection{Flaky Tests Due to Test-Order Dependency}
+Now needed terms and relations concerning Test-Order Dependency will be defined that will be used to describe the approach on how to randomly generate test-cases from that category.\par
+
+Let $T$ be the set of all tests in the test suite. A \textit{test order} is a sequence of a subset of tests from $T$. For a test order $O$ that has a test $t \in T$, let $run_{t}(O)$ be the result of the test $t$ when run in the test order $O$; the results can either $PASS$ or $FAIL$ consistently; we use $run(O)$ to denote the result of the last test run in order $O$. We use $[t]$ to denote a test order consisting of just one test $t$, and use $O + O^{'}$ to denote the concatenation of two test orders $O$ and $O^{'}$.
+
+\begin{definition}
+    A test $t \in T$ has a \textbf{passing test order} or a \textbf{failing test order} $O$ if $run_t(O) = PASS$ or $run_t(O) = FAIL$, respectively.
+\end{definition}
+
+\begin{definition}
+    An \textbf{order-dependent test} $t \in T$ has a passing test order $O$ and a failing test order $O^{'} \neq O$
+\end{definition}
+
+\begin{definition}[Victim]
+    An order-dependent test $v \in T$ is a \textbf{victim} if $run([v]) = PASS$
+\end{definition} 
+
+\begin{definition}[Polluter]
+    A test order (with one or more tests) P is a \textbf{polluter} for a victim $v$ if $run(P + [v]) = FAIL$
+\end{definition}
+
+\begin{definition}[Brittle]
+    An order-dependent test $b \in T$ is a \textbf{brittle} if $run([b]) = FAIL$
+\end{definition}
+
+\begin{definition}[State-Setter] %TODO: Schreibweise?
+    A test order S is a \textbf{state-setter} for a brittle if $run(S + [b]) = PASS$
+\end{definition}
+% Quelle: https://dl.acm.org/doi/pdf/10.1145/3338906.3338925
+
+\section{Abstract Syntax Tree}
+Since the randomized Test-Suites will be generated on the abstract syntax tree level to on the one hand allow for more rigorous reasoning and on the other hand to conveniently transform them to source code and write them to their respective files in the file system, the abstract syntax tree will be defined in the following. 
+\begin{itemize}
+    \item Define abstract syntax tree
+    \item Explain in more detail on some example of a simple ast (a = a + 1)
+\end{itemize}
+
+
+
+\chapter{Generating Randomized Test-Suites} \label{approach}
+
+\section{Theory}
+\lipsum[40-69]
+
+\section{Implementation}
+\begin{itemize}
+    \item decided on pytest rather than unittest due to the simplicity
+\end{itemize}
+
+\chapter{Evaluation}
+\lipsum[70-89]
+
+
+
+\chapter{Conclusion}
+\lipsum[80-99]
+
+
+
+\chapter{Summary}
+\lipsum[80-99]
+
+
+
+\appendix
+\chapter{Listings}
+\lipsum[90-99]
+
+
+
+\backmatter
+\bibliography{refs}
+\bibliographystyle{plain}
+
+\end{document}
