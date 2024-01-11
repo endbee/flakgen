@@ -9,4 +9,4 @@ class TestFileWriter(FileWriter):
 
 
     def get_file_path(self):
-        return "testsuite/" + self.module_name + self.FILE_PATH_POSTFIX + ".py"
+        return "tests/" + self.module_name + self.FILE_PATH_POSTFIX + ".py"

@@ -32,20 +32,18 @@ class RandomApiCombinationGenerator(RandomApiGenerator):
                 multiplication_depth,
                 f'{function_identifier}_combination_{function_index}'
             )
-            statements.append(flaky_function)
         if isinstance(generator, SummationGenerator):
             flaky_function = generator.generate_flaky_function_tree(
                 summation_depth,
                 f'{function_identifier}_combination_{function_index}'
             )
-            statements.append(flaky_function)
         if isinstance(generator, ArithmeticalGenerator):
             flaky_function = generator.generate_flaky_function_tree(
                 expression_depth,
                 f'{function_identifier}_combination_{function_index}'
             )
-            statements.append(flaky_function)
 
+        statements.append(flaky_function)
         return ast.Module(statements)
 
     def generate_test_statements(

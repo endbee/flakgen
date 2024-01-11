@@ -5,4 +5,4 @@ class FunctionFileWriter(FileWriter):
     FILE_PATH_POSTFIX = ""
 
     def get_file_path(self):
-        return "testsuite/" + self.module_name + self.FILE_PATH_POSTFIX + ".py"
+        return self.module_name + self.FILE_PATH_POSTFIX + ".py"

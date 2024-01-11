@@ -59,7 +59,6 @@ class MultipleClassesVictimPolluterTestOrderDependentGenerator(Generator):
             module_identifier,
             class_state_identifiers_map,
         )
-        test_postfix = 'victim'
 
         for i in range(0, number_of_tests):
             test_statements = []

@@ -399,6 +399,8 @@ class TestSuiteRandomizer():
 
             test_file_writer.write_function(astor.to_source(tests_module))
             function_file_writer.write_function(astor.to_source(functions_module))
+            test_statements = []
+            function_statements = []
         test_file_writer.close()
         function_file_writer.close()
 
