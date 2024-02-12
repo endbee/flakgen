@@ -1,13 +1,12 @@
 import os
 import argparse
 import shutil
+import subprocess
 
 from randomization.testsuiterandomizer import TestSuiteRandomizer
 from evaluation.evaluator import get_evaluators
 
 def main():
-    for i in range(10):
-        print(f'Evaluation step {i} starting ...')
         if os.path.exists('tests'):
             cleanup_old_testsuite()
 
@@ -33,6 +32,10 @@ def main():
 def cleanup_old_testsuite():
     shutil.rmtree('tests')
 
+def run_test_suite():
+    stream = os.popen('pytest tests --random-order')
+    output = stream.read()
+    print(output)
 
 def evaluate_test_suite():
     evaluators = get_evaluators()

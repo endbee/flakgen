@@ -5,4 +5,4 @@ class ClassDefinitionFileWriter(FileWriter):
     FILE_PATH_POSTFIX = "_class"
 
     def get_file_path(self):
-        return self.module_name + self.FILE_PATH_POSTFIX + ".py"
+        return 'tests/' + self.module_name + self.FILE_PATH_POSTFIX + ".py"
