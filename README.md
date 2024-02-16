@@ -18,6 +18,3 @@ Run main: ``python main.py``
 - The standard configuration is given in  the ``config.json`` file, these values can be altered 
 - Also another configuration file could be created and then the file path could be passed to the tool like this:
   ``python main.py --config_file_path path_to_file``
-
-## Evaluation
-Run main with evaluation ``python main.py --with_eval``

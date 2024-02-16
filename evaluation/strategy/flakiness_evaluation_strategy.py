@@ -1,13 +1,14 @@
 import fnmatch
 
 import evaluation.strategy.abstract_evaluation_strategy
+
+
 class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strategy.AbstractEvaluationStrategy):
     def evaluate(self):
         print('------------------------- Flakiness evaluation --------------------------')
         non_flaky_tests = {}
         outcomes = {}
         all_tests_are_flaky = True
-
         self.run_test_suite()
         report_data = self.read_report()
         for test in report_data['tests']:

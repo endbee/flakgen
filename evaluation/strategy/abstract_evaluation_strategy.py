@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 import json
 import subprocess
+import sys
+import os
+
 
 class AbstractEvaluationStrategy(ABC):
     @abstractmethod
@@ -17,7 +20,7 @@ class AbstractEvaluationStrategy(ABC):
             sys.exit()
         return report_data
 
-
     def run_test_suite(self):
-        p = subprocess.Popen(['pytest tests --json-report --verbose --random-order'], stdout=subprocess.PIPE, shell=True)
-        (output, err) = p.communicate()
+        stream = os.popen('pytest tests --json-report --verbose --random-order')
+        output = stream.read()
+        print(output)
