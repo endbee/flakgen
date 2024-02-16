@@ -1,7 +1,6 @@
 import os
 import argparse
 import shutil
-import subprocess
 
 from randomization.testsuiterandomizer import TestSuiteRandomizer
 from evaluation.evaluator import get_evaluators
@@ -12,6 +11,7 @@ def main():
 
         parser = argparse.ArgumentParser()
         parser.add_argument("--config_file_path")
+        parser.add_argument("--with_eval", action="store_true", help="If set, evaluate the test suite")
         args = parser.parse_args()
 
         config_file_path = "config.json"
@@ -25,9 +25,11 @@ def main():
         randomizer = TestSuiteRandomizer()
         randomizer.generate_randomized_test_suite(config_file_path)
 
-        #run_test_suite()
+        if args.with_eval:
+            evaluate_test_suite()
+        else:
+            run_test_suite()
 
-        evaluate_test_suite()
 
 def cleanup_old_testsuite():
     shutil.rmtree('tests')

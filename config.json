@@ -56,8 +56,14 @@
       "flakiness_prob":  0.5
     },
     "multiple_classes_victim_polluter": {
-      "test_number_share": 0.2,
+      "test_number_share": 0.1,
       "max_class_count": 25
+    }
+  },
+  "async_wait": {
+    "task_race_cond": {
+      "test_number_share": 0.1000000000000001,
+      "flakiness_prob":  0.5
     }
   }
 }

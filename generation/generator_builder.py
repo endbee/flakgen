@@ -10,6 +10,7 @@ import generation.test_order_dependent.basic_victim_polluter
 import generation.test_order_dependent.classes_brittle_state_setter
 import generation.test_order_dependent.classes_victim_polluter
 import generation.test_order_dependent.multiple_classes_victim_polluter
+import generation.async_wait.task_race_cond
 
 
 
@@ -25,6 +26,9 @@ class GeneratorBuilder:
 
     # Builds all implemented generator classes with respective parameters from config file
     def build_generator_dict(self):
+        # generator dictionary has the same structure as the config.json file except that for each flakiness kind within
+        # a category there is the specific generator. For example: For the category random_api and the kind summation
+        # there is the SummationGenerator
         return {
             'random_api': {
                 'summation': generation.random_api.summation.SummationGenerator(
@@ -59,5 +63,8 @@ class GeneratorBuilder:
                     generation.test_order_dependent.classes_victim_polluter.ClassesVictimPolluterTestOrderDependentGenerator(),
                 'multiple_classes_victim_polluter':
                     generation.test_order_dependent.multiple_classes_victim_polluter.MultipleClassesVictimPolluterTestOrderDependentGenerator(),
+            },
+            'async_wait': {
+                'task_race_cond': generation.async_wait.task_race_cond.TaskRaceCondGenerator()
             }
         }

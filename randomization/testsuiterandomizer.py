@@ -104,7 +104,7 @@ class TestSuiteRandomizer():
                     )
 
                 if kind == 'multiple_classes_victim_polluter':
-                    self.generate_randomized_test_order_dependent_multiple_classes_victim_polluter(
+                    self.generate_randomized_test_order_dependent_multiple_classes_victim_polluter_test_suite(
                         category,
                         config_data,
                         flakiness_category_generators,
@@ -112,7 +112,16 @@ class TestSuiteRandomizer():
                         total_test_count
                     )
 
-    def generate_randomized_test_order_dependent_multiple_classes_victim_polluter(
+                if kind == 'task_race_cond':
+                    self.generate_randomized_async_wait_task_race_cond_test_suite(
+                        category,
+                        config_data,
+                        flakiness_category_generators,
+                        kind,
+                        total_test_count
+                    )
+
+    def generate_randomized_test_order_dependent_multiple_classes_victim_polluter_test_suite(
             self,
             category,
             config_data,
@@ -520,6 +529,48 @@ class TestSuiteRandomizer():
         function_file_writer.write_function(astor.to_source(functions_module))
         test_file_writer.close()
         function_file_writer.close()
+
+    def generate_randomized_async_wait_task_race_cond_test_suite(
+            self,
+            category,
+            config_data,
+            flakiness_category_generators,
+            kind,
+            total_test_count
+    ):
+        relative_tests_share = config_data[category][kind]['test_number_share']
+        tests_share = int(total_test_count * relative_tests_share)
+
+        generator = flakiness_category_generators[category][kind]
+
+        for i in range(tests_share):
+            test_statements = []
+
+            function_identifier = uuid.uuid4().hex
+
+            test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{function_identifier}')
+
+            states = list(range(1, 1001))
+
+            init_state = random.choice(states)
+            states.remove(init_state)
+            failure_state = random.choice(states)
+            states.remove(failure_state)
+            success_state = random.choice(states)
+            states.remove(success_state)
+
+            test_statements.extend(generator.generate_imports())
+            test_statements.append(generator.generate_state_init(init_state))
+            test_statements.extend(generator.generate_delay_init())
+            test_statements.append(generator.generate_success_state_setter_func(success_state, function_identifier))
+            test_statements.append(generator.generate_failure_state_setter_func(failure_state, function_identifier))
+            test_tree = generator.generate_test_tree(function_identifier, success_state)
+
+            test_statements.append(test_tree)
+
+            tests_module = ast.Module(body=test_statements)
+            test_file_writer.write_function(astor.to_source(tests_module))
+            test_file_writer.close()
 
     def assert_test_shares_add_to_one(self, config_data, flakiness_category_generators):
         total_test_number_share = 0
