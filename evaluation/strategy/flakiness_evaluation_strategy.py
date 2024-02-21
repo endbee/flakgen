@@ -20,6 +20,8 @@ class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strate
             for test in report_data['tests']:
                 outcomes[test['nodeid']].append(test['outcome'])
 
+        self.output_latex_table(outcomes)
+
         for outcome in outcomes:
             current_outcome_flaky = self.check_passed_failed_presence(outcomes[outcome])
             if not current_outcome_flaky:
@@ -54,32 +56,31 @@ class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strate
     def output_latex_table(self, data):
         data = {key: ["p" if val == "passed" else "f" for val in values] for key, values in data.items()}
 
-        # Header
-        latex_table = "\\begin{longtable}{|c|" + "|".join(["c" for _ in range(11)]) + "|}\n"
-        latex_table += "\\hline\n"
-        latex_table += "Viewed Test &  1 &  2 &  3 &  4 &  5 &  6 &  7 &  8 &  9 &  10 \\\\\n"
-        latex_table += "\\hline\n"
+        table = "\\begin{longtable}{|c|" + "|".join(["c" for _ in range(11)]) + "|}\n"
+        table += "\\hline\n"
+        table += "Viewed Test &  1 &  2 &  3 &  4 &  5 &  6 &  7 &  8 &  9 &  10 \\\\\n"
+        table += "\\hline\n"
 
-        # Body
-        for idx, (key, values) in enumerate(data.items()):
+        for index, (key, values) in enumerate(data.items()):
             display_key = self.transform_key(key)
             if all(val == "p" for val in values):
-                latex_table += f"{idx}\_{display_key} & {' & '.join(values)} \\\\\n"
+                table += f"{index}\_{display_key} & {' & '.join(values)} \\\\\n"
             elif all(val == "f" for val in values):
-                latex_table += f"{idx}\_{display_key}  & {' & '.join(values)} \\\\\n"
+                table += f"{index}\_{display_key}  & {' & '.join(values)} \\\\\n"
             else:
-                latex_table += f"{idx}\_{display_key} & {' & '.join(values)} \\\\\n"
-            latex_table += "\\hline\n"
+                table += f"{index}\_{display_key} & {' & '.join(values)} \\\\\n"
+            table += "\\hline\n"
 
-        # Footer
-        latex_table += "\\caption{Table depicting test suite execution results for each test case, 500 test cases, 10 executions}"
-        latex_table += "\\label{table:exec-res}"
-        latex_table += "\\end{longtable}"
+        table += "\\caption{Table depicting test suite execution results for each test case, 500 test cases, 10 executions}"
+        table += "\\label{table:exec-res}"
+        table += "\\end{longtable}"
 
         with open("outcomes_table.txt", "w") as text_file:
-            text_file.write(latex_table)
+            text_file.write(table)
 
     def transform_key(self, key):
+        if 'async_wait' in key:
+            return 'async\_wait'
         if 'summation' in key:
             return 'rand'
         if 'arithmetical' in key:
