@@ -17,18 +17,21 @@ class SummationGenerator(RandomApiGenerator):
         result = ast.Name('result')
 
         if_expr = ast.IfExp(
-            self.generate_compare_lt_expression(self.generate_random_float_number_expression(), ast.Constant(self.flakiness_prob)),
+            self.generate_compare_lt_expression(
+                self.generate_random_float_number_expression(), ast.Constant(self.flakiness_prob)),
             zero,
             epsilon
         )
 
-        summation_expression = ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=if_expr))
+        summation_expression = ast.Expression(
+            ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=if_expr))
         assignment = ast.Assign([result], summation_expression)
         statements.append(assignment)
 
         for i in range(summation_depth-1):
             summation_expression = \
-                ast.Expression(ast.BinOp(left=ast.Name(id='summand'), op=ast.Add(), right=result))
+                ast.Expression(ast.BinOp(left=ast.Name(
+                    id='summand'), op=ast.Add(), right=result))
             assignment = ast.Assign([result], summation_expression)
             statements.append(assignment)
 
@@ -45,7 +48,8 @@ class SummationGenerator(RandomApiGenerator):
     def generate_test_tree(self, summand, summation_depth, function_identifier):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name('random_api_summation.flaky_summation_' + function_identifier), args=[ast.Constant(summand)], keywords=[])
+        actual_value = ast.Call(func=ast.Name('random_api_summation.flaky_summation_' +
+                                function_identifier), args=[ast.Constant(summand)], keywords=[])
 
         statements = [
             ast.Assign(targets=[actual], value=actual_value,
@@ -56,7 +60,8 @@ class SummationGenerator(RandomApiGenerator):
 
         random.shuffle(statements)
 
-        statements.append(self.generate_assert_equality_expression(expected, actual))
+        statements.append(
+            self.generate_assert_equality_expression(expected, actual))
 
         test_function = ast.FunctionDef(
             'test_sum_' + function_identifier,

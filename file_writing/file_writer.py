@@ -12,7 +12,8 @@ class FileWriter(ABC):
         try:
             self.file_handler = open(self.get_file_path(), "w")
         except OSError as e:
-            print(f"Unable to open file \"{self.get_file_path()}\": {e}", file=sys.stderr)
+            print(
+                f"Unable to open file \"{self.get_file_path()}\": {e}", file=sys.stderr)
             sys.exit()
 
     # Gets a function definition as string and writes it to the file

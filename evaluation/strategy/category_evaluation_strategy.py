@@ -6,6 +6,8 @@ import sys
 import fnmatch
 
 import evaluation.strategy.abstract_evaluation_strategy
+
+
 class CategoryEvaluationStrategy(evaluation.strategy.abstract_evaluation_strategy.AbstractEvaluationStrategy):
     def evaluate(self):
         print(f'------------------------- Category evaluation --------------------------')
@@ -21,9 +23,12 @@ class CategoryEvaluationStrategy(evaluation.strategy.abstract_evaluation_strateg
             sub_category_name = categories[category]['sub_category']
             target_file_name_pattern = category_name + '_' + sub_category_name + '_*.py'
             flakiness_category = category_name + '_' + sub_category_name
-            category_share = self.get_category_share(config_data, category_name, sub_category_name)
-            result = self.count_functions_in_files(directory_path, target_file_name_pattern)
-            print(f"Number of functions in {flakiness_category}: {result} target was {total_test_count*category_share}")
+            category_share = self.get_category_share(
+                config_data, category_name, sub_category_name)
+            result = self.count_functions_in_files(
+                directory_path, target_file_name_pattern)
+            print(
+                f"Number of functions in {flakiness_category}: {result} target was {total_test_count*category_share}")
 
     def get_categories(self):
         return {
@@ -65,7 +70,6 @@ class CategoryEvaluationStrategy(evaluation.strategy.abstract_evaluation_strateg
             },
         }
 
-
     def count_functions_in_files(self, directory, file_name):
         # Initialize a counter
         total_functions = 0
@@ -82,8 +86,10 @@ class CategoryEvaluationStrategy(evaluation.strategy.abstract_evaluation_strateg
                         file_content = f.read()
 
                         # Use a regular expression to count functions
-                        function_pattern = re.compile(r'def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(')
-                        functions_in_file = function_pattern.findall(file_content)
+                        function_pattern = re.compile(
+                            r'def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(')
+                        functions_in_file = function_pattern.findall(
+                            file_content)
 
                         # Update the total count
                         total_functions += len(functions_in_file)
@@ -101,5 +107,6 @@ class CategoryEvaluationStrategy(evaluation.strategy.abstract_evaluation_strateg
             with open(config_file_path) as config_file:
                 return json.load(config_file)
         except OSError as e:
-            print(f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
+            print(
+                f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
             sys.exit()

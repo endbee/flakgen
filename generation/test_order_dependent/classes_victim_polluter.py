@@ -11,12 +11,15 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
 
         state_name = f'member_state_{state_identifier}'
 
-        class_member = ast.Assign(targets=[ast.Name(state_name)], value=ast.Constant('success_state'))
+        class_member = ast.Assign(
+            targets=[ast.Name(state_name)], value=ast.Constant('success_state'))
 
         class_member_setter = ast.FunctionDef(
             f'set_{state_name}',
-            ast.arguments([], [ast.arg('self'), ast.arg('value')], defaults=[]),
-            [ast.Assign(targets=[ast.Name(f'self.{state_name}')], value=ast.alias('value'))],
+            ast.arguments(
+                [], [ast.arg('self'), ast.arg('value')], defaults=[]),
+            [ast.Assign(
+                targets=[ast.Name(f'self.{state_name}')], value=ast.alias('value'))],
             []
         )
 
@@ -45,7 +48,8 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
         test_positions = list(range(0, number_of_tests))
         polluted_test = random.choice(test_positions)
 
-        statements, class_instance = self.generate_initializing_statements(class_identifier, class_instance_name)
+        statements, class_instance = self.generate_initializing_statements(
+            class_identifier, class_instance_name)
 
         for i in range(0, number_of_tests):
             test_statements = []
@@ -55,13 +59,15 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
                 # when polluter, pollute by setting new value to global variable
                 test_postfix = 'polluter'
                 test_statements.extend(
-                    self.generate_polluter_statements(class_instance_name, state_identifier)
+                    self.generate_polluter_statements(
+                        class_instance_name, state_identifier)
                 )
             else:
                 # when victim, just assert the global variable value to be the initial value
                 test_postfix = 'victim'
                 test_statements.extend(
-                    self.generate_victim_statements(class_instance_name, state_identifier, success_state_value)
+                    self.generate_victim_statements(
+                        class_instance_name, state_identifier, success_state_value)
                 )
 
             test = ast.FunctionDef(
@@ -79,9 +85,9 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
         victim_statements = [
             ast.Expr(ast.Global(names=[class_instance_name])),
             self.generate_assert_equality_expression(
-                                 ast.Call(func=ast.Name(f'{class_instance_name}.get_member_state_{state_identifier}'),
-                                          args=[],
-                                          keywords=[]), success_state_value
+                ast.Call(func=ast.Name(f'{class_instance_name}.get_member_state_{state_identifier}'),
+                         args=[],
+                         keywords=[]), success_state_value
             )
         ]
 
@@ -91,7 +97,8 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
         polluter_statements = []
         polluted_value = ast.Constant('failure_state')
 
-        polluter_statements.append(ast.Expr(ast.Global(names=[class_instance_name])))
+        polluter_statements.append(
+            ast.Expr(ast.Global(names=[class_instance_name])))
         polluter_statements.append(ast.Expr(
             ast.Call(func=ast.Name(f'{class_instance_name}.set_member_state_{state_identifier}'),
                      args=[ast.Constant('failure_state')],
@@ -105,7 +112,8 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
     def generate_brittle(self, state_identifier, class_instance_name):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name(f'instance.get_member_state_{state_identifier}'), args=[], keywords=[])
+        actual_value = ast.Call(func=ast.Name(
+            f'instance.get_member_state_{state_identifier}'), args=[], keywords=[])
 
         brittle_statements = [
             ast.Global([class_instance_name]),
@@ -131,7 +139,8 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
                          args=[ast.Constant('success_state')],
                          keywords=[])),
             self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name(f'instance.dummy_function'), args=[], keywords=[]),
+                ast.Call(func=ast.Name(f'instance.dummy_function'),
+                         args=[], keywords=[]),
                 ast.Constant(dummy_function_return)
             )
         ]
@@ -161,4 +170,3 @@ class ClassesVictimPolluterTestOrderDependentGenerator(Generator):
             ast.Assign(targets=[class_instance], value=class_instance_value,
                        type_ignores=[])
         ], class_instance
-

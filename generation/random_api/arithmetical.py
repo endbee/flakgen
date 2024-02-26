@@ -14,9 +14,11 @@ class ArithmeticalGenerator(RandomApiGenerator):
     # Generates function that calculates some flaky arithmetical expression
     def generate_flaky_function_tree(self, expression_count, function_identifier):
         # Safe the non-flaky expression to have comparison base
-        self.arithmetical_expression, statements = self.generate_arithmetical_expression(expression_count)
+        self.arithmetical_expression, statements = self.generate_arithmetical_expression(
+            expression_count)
 
-        statements.append(ast.Return(self.make_arithmetical_expression_flaky()))
+        statements.append(ast.Return(
+            self.make_arithmetical_expression_flaky()))
 
         return ast.FunctionDef(
             'flaky_arithmetical_' + function_identifier,
@@ -29,7 +31,8 @@ class ArithmeticalGenerator(RandomApiGenerator):
     def generate_test_tree(self, function_identifier):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name('random_api_arithmetical.flaky_arithmetical_' + function_identifier), args=[], keywords=[])
+        actual_value = ast.Call(func=ast.Name(
+            'random_api_arithmetical.flaky_arithmetical_' + function_identifier), args=[], keywords=[])
 
         return ast.FunctionDef(
             'test_arithmetical_' + function_identifier,
@@ -49,7 +52,7 @@ class ArithmeticalGenerator(RandomApiGenerator):
 
     @staticmethod
     def get_random_operand():
-        return ast.Constant(random.randint(1,9))
+        return ast.Constant(random.randint(1, 9))
 
     # Generates expression where random numbers are concatinated with random airthmetical operators as often as the
     # expression_count indicates like, expression_count=4: 3 - 2 - 4 * 5
@@ -58,11 +61,11 @@ class ArithmeticalGenerator(RandomApiGenerator):
         result = ast.Name('result')
 
         arithmetical_expression = ast.Expression(
-                    ast.BinOp(
-                        left=self.get_random_operand(),
-                        op=self.get_random_binary_operator(),
-                        right=self.get_random_operand()
-                    ))
+            ast.BinOp(
+                left=self.get_random_operand(),
+                op=self.get_random_binary_operator(),
+                right=self.get_random_operand()
+            ))
 
         assignment = ast.Assign([result], arithmetical_expression)
         statements.append(assignment)

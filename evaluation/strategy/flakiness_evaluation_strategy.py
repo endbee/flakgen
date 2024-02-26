@@ -21,7 +21,8 @@ class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strate
                 outcomes[test['nodeid']].append(test['outcome'])
 
         for outcome in outcomes:
-            current_outcome_flaky = self.check_passed_failed_presence(outcomes[outcome])
+            current_outcome_flaky = self.check_passed_failed_presence(
+                outcomes[outcome])
             if not current_outcome_flaky:
                 non_flaky_tests[outcome] = outcomes[outcome]
             all_tests_are_flaky = all_tests_are_flaky and current_outcome_flaky

@@ -21,6 +21,7 @@ class AbstractEvaluationStrategy(ABC):
         return report_data
 
     def run_test_suite(self):
-        stream = os.popen('pytest tests --json-report --verbose --random-order')
+        stream = os.popen(
+            'pytest tests --json-report --verbose --random-order')
         output = stream.read()
         print(output)

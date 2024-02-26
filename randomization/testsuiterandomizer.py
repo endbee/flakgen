@@ -10,6 +10,7 @@ from file_writing.test_file_writer import TestFileWriter
 from file_writing.function_file_writer import FunctionFileWriter
 from file_writing.class_definition_file_writer import ClassDefinitionFileWriter
 
+
 class TestSuiteRandomizer():
     def generate_randomized_test_suite(self, config_file_path, is_evaluation):
         generator_builder = GeneratorBuilder(config_file_path)
@@ -19,11 +20,13 @@ class TestSuiteRandomizer():
         # config properties to respective generator
         flakiness_category_generators = generator_builder.build_generator_dict()
 
-        self.assert_test_shares_add_to_one(config_data, flakiness_category_generators)
+        self.assert_test_shares_add_to_one(
+            config_data, flakiness_category_generators)
 
         max_total_test_count = config_data['max_total_test_count']
         min_total_test_count = config_data['min_total_test_count']
-        total_test_count = random.randint(min_total_test_count, max_total_test_count)
+        total_test_count = random.randint(
+            min_total_test_count, max_total_test_count)
 
         for category in flakiness_category_generators:
             # Instantiate file writer objects for each category to write them to separate file such that for example all
@@ -168,7 +171,8 @@ class TestSuiteRandomizer():
             module_name = f'{category}_{kind}_{module_identifier}'
 
             test_file_writer = TestFileWriter(module_name)
-            class_definition_file_writer = ClassDefinitionFileWriter(module_name=module_name, is_evaluation=is_evaluation)
+            class_definition_file_writer = ClassDefinitionFileWriter(
+                module_name=module_name, is_evaluation=is_evaluation)
             generator = flakiness_category_generators[category][kind]
 
             test_tree = generator.generate_test_tree(
@@ -182,7 +186,8 @@ class TestSuiteRandomizer():
             )
 
             test_file_writer.write_function(astor.to_source(test_tree))
-            class_definition_file_writer.write_function(astor.to_source(classes_tree))
+            class_definition_file_writer.write_function(
+                astor.to_source(classes_tree))
 
             test_file_writer.close()
             class_definition_file_writer.close()
@@ -210,7 +215,8 @@ class TestSuiteRandomizer():
             module_name = f'{category}_{kind}_{class_identifier}'
 
             test_file_writer = TestFileWriter(module_name)
-            class_definition_file_writer = ClassDefinitionFileWriter(module_name=module_name, is_evaluation=is_evaluation)
+            class_definition_file_writer = ClassDefinitionFileWriter(
+                module_name=module_name, is_evaluation=is_evaluation)
             generator = flakiness_category_generators[category][kind]
 
             test_tree = generator.generate_test_tree(
@@ -225,7 +231,8 @@ class TestSuiteRandomizer():
             )
 
             test_file_writer.write_function(astor.to_source(test_tree))
-            class_definition_file_writer.write_function(astor.to_source(class_tree))
+            class_definition_file_writer.write_function(
+                astor.to_source(class_tree))
 
             test_file_writer.close()
             class_definition_file_writer.close()
@@ -256,7 +263,8 @@ class TestSuiteRandomizer():
             module_name = f'{category}_{kind}_{class_identifier}'
 
             test_file_writer = TestFileWriter(module_name)
-            class_definition_file_writer = ClassDefinitionFileWriter(module_name=module_name, is_evaluation=is_evaluation)
+            class_definition_file_writer = ClassDefinitionFileWriter(
+                module_name=module_name, is_evaluation=is_evaluation)
             generator = flakiness_category_generators[category][kind]
 
             test_tree = generator.generate_test_tree(
@@ -270,7 +278,8 @@ class TestSuiteRandomizer():
             )
 
             test_file_writer.write_function(astor.to_source(test_tree))
-            class_definition_file_writer.write_function(astor.to_source(class_tree))
+            class_definition_file_writer.write_function(
+                astor.to_source(class_tree))
 
             test_file_writer.close()
             class_definition_file_writer.close()
@@ -298,10 +307,12 @@ class TestSuiteRandomizer():
             generated_tests += number_of_tests
             file_identifier = uuid.uuid4().hex
 
-            test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
+            test_file_writer = TestFileWriter(
+                module_name=f'{category}_{kind}_{file_identifier}')
             generator = flakiness_category_generators[category][kind]
 
-            test_tree = generator.generate_test_tree(states_to_be_set=number_of_tests)
+            test_tree = generator.generate_test_tree(
+                states_to_be_set=number_of_tests)
 
             test_file_writer.write_function(astor.to_source(test_tree))
 
@@ -329,10 +340,12 @@ class TestSuiteRandomizer():
             generated_tests += number_of_tests
             file_identifier = uuid.uuid4().hex
 
-            test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
+            test_file_writer = TestFileWriter(
+                module_name=f'{category}_{kind}_{file_identifier}')
             generator = flakiness_category_generators[category][kind]
 
-            test_tree = generator.generate_test_tree(number_of_tests=number_of_tests)
+            test_tree = generator.generate_test_tree(
+                number_of_tests=number_of_tests)
 
             test_file_writer.write_function(astor.to_source(test_tree))
 
@@ -351,7 +364,8 @@ class TestSuiteRandomizer():
             (config_data)['random_api']["combination"]["multiplication"][
                 "max_multiplication_depth"]
         max_summation_depth = \
-            (config_data)['random_api']["combination"]["summation"]["max_summation_depth"]
+            (config_data)[
+                'random_api']["combination"]["summation"]["max_summation_depth"]
         max_expression_depth = \
             (config_data)['random_api']["combination"]["arithmetical"][
                 "max_expression_depth"]
@@ -362,12 +376,14 @@ class TestSuiteRandomizer():
             (config_data)['random_api']["combination"]["summation"][
                 "max_summand"]
         max_number_of_assertions = \
-            (config_data)['random_api']["combination"]["max_number_of_assertions"]
+            (config_data)[
+                'random_api']["combination"]["max_number_of_assertions"]
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
 
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
+        function_file_writer = FunctionFileWriter(
+            module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
@@ -381,7 +397,8 @@ class TestSuiteRandomizer():
             test_function_statements = []
 
             for i in range(number_of_assertions):
-                multiplication_depth = random.randint(1, max_multiplication_depth)
+                multiplication_depth = random.randint(
+                    1, max_multiplication_depth)
                 summation_depth = random.randint(1, max_summation_depth)
                 expression_depth = random.randint(1, max_expression_depth)
                 multiplicand = random.randint(1, max_multiplicand)
@@ -422,7 +439,8 @@ class TestSuiteRandomizer():
             tests_module = ast.Module(body=test_statements)
 
             test_file_writer.write_function(astor.to_source(tests_module))
-            function_file_writer.write_function(astor.to_source(functions_module))
+            function_file_writer.write_function(
+                astor.to_source(functions_module))
             test_statements = []
             function_statements = []
         test_file_writer.close()
@@ -438,7 +456,8 @@ class TestSuiteRandomizer():
             is_evaluation
     ):
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
+        function_file_writer = FunctionFileWriter(
+            module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
@@ -453,7 +472,8 @@ class TestSuiteRandomizer():
         for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
             expression_count = random.randint(1, max_expression_count)
-            func_tree = generator.generate_flaky_function_tree(expression_count, function_identifier)
+            func_tree = generator.generate_flaky_function_tree(
+                expression_count, function_identifier)
             test_tree = generator.generate_test_tree(function_identifier)
 
             test_statements.append(test_tree)
@@ -476,10 +496,12 @@ class TestSuiteRandomizer():
     ):
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
+        function_file_writer = FunctionFileWriter(
+            module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         max_multiplication_depth = \
-            (config_data)['random_api']["multiplication"]["max_multiplication_depth"]
+            (config_data)[
+                'random_api']["multiplication"]["max_multiplication_depth"]
         max_multiplicand = \
             (config_data)['random_api']["multiplication"]["max_multiplicand"]
         relative_tests_share = config_data[category][kind]['test_number_share']
@@ -518,7 +540,8 @@ class TestSuiteRandomizer():
     ):
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
+        function_file_writer = FunctionFileWriter(
+            module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
@@ -535,8 +558,10 @@ class TestSuiteRandomizer():
             summation_depth = random.randint(1, max_summation_depth)
             summand = random.randint(1, max_summand)
 
-            func_tree = generator.generate_flaky_function_tree(summation_depth, function_identifier)
-            test_tree = generator.generate_test_tree(summand, summation_depth, function_identifier)
+            func_tree = generator.generate_flaky_function_tree(
+                summation_depth, function_identifier)
+            test_tree = generator.generate_test_tree(
+                summand, summation_depth, function_identifier)
 
             test_statements.append(test_tree)
             function_statements.append(func_tree)
@@ -566,7 +591,8 @@ class TestSuiteRandomizer():
 
             function_identifier = uuid.uuid4().hex
 
-            test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{function_identifier}')
+            test_file_writer = TestFileWriter(
+                module_name=f'{category}_{kind}_{function_identifier}')
 
             states = list(range(1, 1001))
 
@@ -580,9 +606,12 @@ class TestSuiteRandomizer():
             test_statements.extend(generator.generate_imports())
             test_statements.append(generator.generate_state_init(init_state))
             test_statements.extend(generator.generate_delay_init())
-            test_statements.append(generator.generate_success_state_setter_func(success_state, function_identifier))
-            test_statements.append(generator.generate_failure_state_setter_func(failure_state, function_identifier))
-            test_tree = generator.generate_test_tree(function_identifier, success_state)
+            test_statements.append(generator.generate_success_state_setter_func(
+                success_state, function_identifier))
+            test_statements.append(generator.generate_failure_state_setter_func(
+                failure_state, function_identifier))
+            test_tree = generator.generate_test_tree(
+                function_identifier, success_state)
 
             test_statements.append(test_tree)
 
@@ -597,5 +626,6 @@ class TestSuiteRandomizer():
                 total_test_number_share += config_data[category][kind]['test_number_share']
 
         if total_test_number_share != 1:
-            print(f'Test number share does not add up to 1, instead: {total_test_number_share}', file=sys.stderr)
+            print(
+                f'Test number share does not add up to 1, instead: {total_test_number_share}', file=sys.stderr)
             sys.exit()

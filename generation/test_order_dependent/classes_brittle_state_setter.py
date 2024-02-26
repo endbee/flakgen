@@ -11,12 +11,15 @@ class ClassesBrittleStateSetterTestOrderDependentGenerator(Generator):
 
         state_name = f'member_state_{state_identifier}'
 
-        class_member = ast.Assign(targets=[ast.Name(state_name)], value=ast.Constant('failure_state'))
+        class_member = ast.Assign(
+            targets=[ast.Name(state_name)], value=ast.Constant('failure_state'))
 
         class_member_setter = ast.FunctionDef(
             f'set_{state_name}',
-            ast.arguments([], [ast.arg('self'), ast.arg('value')], defaults=[]),
-            [ast.Assign(targets=[ast.Name(f'self.{state_name}')], value=ast.alias('value'))],
+            ast.arguments(
+                [], [ast.arg('self'), ast.arg('value')], defaults=[]),
+            [ast.Assign(
+                targets=[ast.Name(f'self.{state_name}')], value=ast.alias('value'))],
             []
         )
 
@@ -51,10 +54,12 @@ class ClassesBrittleStateSetterTestOrderDependentGenerator(Generator):
     def generate_test_tree(self, class_identifier, state_identifier, dummy_function_return):
         class_instance_name = 'instance'
 
-        statements = self.generate_initializing_statements(class_identifier, class_instance_name)
+        statements = self.generate_initializing_statements(
+            class_identifier, class_instance_name)
 
         brittle = self.generate_brittle(state_identifier, class_instance_name)
-        state_setter = self.generate_state_setter(state_identifier, class_instance_name, dummy_function_return)
+        state_setter = self.generate_state_setter(
+            state_identifier, class_instance_name, dummy_function_return)
 
         statements.append(brittle)
         statements.append(state_setter)
@@ -64,7 +69,8 @@ class ClassesBrittleStateSetterTestOrderDependentGenerator(Generator):
     def generate_brittle(self, state_identifier, class_instance_name):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name(f'instance.get_member_state_{state_identifier}'), args=[], keywords=[])
+        actual_value = ast.Call(func=ast.Name(
+            f'instance.get_member_state_{state_identifier}'), args=[], keywords=[])
 
         brittle_statements = [
             ast.Global([class_instance_name]),
@@ -89,7 +95,8 @@ class ClassesBrittleStateSetterTestOrderDependentGenerator(Generator):
                 ast.Call(func=ast.Name(f'instance.set_member_state_{state_identifier}'), args=[ast.Constant('success_state')],
                          keywords=[])),
             self.generate_assert_equality_expression(
-                ast.Call(func=ast.Name(f'instance.dummy_function'), args=[], keywords=[]),
+                ast.Call(func=ast.Name(f'instance.dummy_function'),
+                         args=[], keywords=[]),
                 ast.Constant(dummy_function_return)
             )
         ]

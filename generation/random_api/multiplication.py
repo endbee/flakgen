@@ -23,13 +23,15 @@ class MultiplicationGenerator(RandomApiGenerator):
             minus_one
         )
 
-        multiplication_expression = ast.Expression(ast.BinOp(left=ast.Name(id='multiplicand'), op=ast.Mult(), right=if_expr))
+        multiplication_expression = ast.Expression(
+            ast.BinOp(left=ast.Name(id='multiplicand'), op=ast.Mult(), right=if_expr))
         assignment = ast.Assign([result], multiplication_expression)
         statements.append(assignment)
 
         for i in range(multiplication_depth - 1):
             multiplication_expression = \
-                ast.Expression(ast.BinOp(left=ast.Name(id='multiplicand'), op=ast.Mult(), right=result))
+                ast.Expression(ast.BinOp(left=ast.Name(
+                    id='multiplicand'), op=ast.Mult(), right=result))
             assignment = ast.Assign([result], multiplication_expression)
             statements.append(assignment)
 
@@ -47,8 +49,8 @@ class MultiplicationGenerator(RandomApiGenerator):
     def generate_test_tree(self, multiplicand, multiplication_depth, funciton_identifier):
         actual = ast.Name('actual')
         expected = ast.Name('expected')
-        actual_value = ast.Call(func=ast.Name('random_api_multiplication.flaky_multiplication_' + funciton_identifier), args=[ast.Constant(multiplicand)], keywords=[])
-
+        actual_value = ast.Call(func=ast.Name('random_api_multiplication.flaky_multiplication_' +
+                                funciton_identifier), args=[ast.Constant(multiplicand)], keywords=[])
 
         return ast.FunctionDef(
             'test_multiplication_' + funciton_identifier,
