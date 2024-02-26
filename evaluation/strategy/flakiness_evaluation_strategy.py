@@ -20,8 +20,6 @@ class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strate
             for test in report_data['tests']:
                 outcomes[test['nodeid']].append(test['outcome'])
 
-        self.output_latex_table(outcomes)
-
         for outcome in outcomes:
             current_outcome_flaky = self.check_passed_failed_presence(outcomes[outcome])
             if not current_outcome_flaky:
@@ -42,9 +40,6 @@ class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strate
         print(len(non_flaky_tests))
         print(count)
 
-    def filter_dict_by_string(self, dictionary, substring):
-        return {key: value for key, value in dictionary.items() if substring in key}
-
     def check_passed_failed_presence(self, arr):
         # Check if both "passed" and "failed" are present in the array
         passed_present = "passed" in arr
@@ -52,46 +47,3 @@ class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strate
 
         # Return True if both are present, otherwise False
         return passed_present and failed_present
-
-    def output_latex_table(self, data):
-        data = {key: ["p" if val == "passed" else "f" for val in values] for key, values in data.items()}
-
-        table = "\\begin{longtable}{|c|" + "|".join(["c" for _ in range(11)]) + "|}\n"
-        table += "\\hline\n"
-        table += "Viewed Test &  1 &  2 &  3 &  4 &  5 &  6 &  7 &  8 &  9 &  10 \\\\\n"
-        table += "\\hline\n"
-
-        for index, (key, values) in enumerate(data.items()):
-            display_key = self.transform_key(key)
-            if all(val == "p" for val in values):
-                table += f"{index}\_{display_key} & {' & '.join(values)} \\\\\n"
-            elif all(val == "f" for val in values):
-                table += f"{index}\_{display_key}  & {' & '.join(values)} \\\\\n"
-            else:
-                table += f"{index}\_{display_key} & {' & '.join(values)} \\\\\n"
-            table += "\\hline\n"
-
-        table += "\\caption{Table depicting test suite execution results for each test case, 500 test cases, 10 executions}"
-        table += "\\label{table:exec-res}"
-        table += "\\end{longtable}"
-
-        with open("outcomes_table.txt", "w") as text_file:
-            text_file.write(table)
-
-    def transform_key(self, key):
-        if 'async_wait' in key:
-            return 'async\_wait'
-        if 'summation' in key:
-            return 'rand'
-        if 'arithmetical' in key:
-            return 'rand\_arith'
-        if 'multiplication' in key:
-            return 'rand'
-        if 'combination' in key:
-            return 'rand\_comb'
-        if key.endswith('polluter'):
-            return 'order\_polluter'
-        if key.endswith('state_setter') or fnmatch.fnmatch(key, '*state_setter_?'):
-            return 'order\_state'
-
-        return 'order'

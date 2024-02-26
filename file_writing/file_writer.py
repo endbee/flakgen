@@ -5,8 +5,9 @@ import sys
 class FileWriter(ABC):
 
     # Opens respective file for writing for the module
-    def __init__(self, module_name):
+    def __init__(self, module_name, is_evaluation=False):
         self.module_name = module_name
+        self.is_evaluation = is_evaluation
 
         try:
             self.file_handler = open(self.get_file_path(), "w")

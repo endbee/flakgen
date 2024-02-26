@@ -11,7 +11,7 @@ from file_writing.function_file_writer import FunctionFileWriter
 from file_writing.class_definition_file_writer import ClassDefinitionFileWriter
 
 class TestSuiteRandomizer():
-    def generate_randomized_test_suite(self, config_file_path):
+    def generate_randomized_test_suite(self, config_file_path, is_evaluation):
         generator_builder = GeneratorBuilder(config_file_path)
         config_data = generator_builder.config_data
 
@@ -37,7 +37,8 @@ class TestSuiteRandomizer():
                         config_data,
                         flakiness_category_generators,
                         kind,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'multiplication':
@@ -46,7 +47,8 @@ class TestSuiteRandomizer():
                         config_data,
                         flakiness_category_generators,
                         kind,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'arithmetical':
@@ -55,7 +57,8 @@ class TestSuiteRandomizer():
                         config_data,
                         flakiness_category_generators,
                         kind,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'combination':
@@ -64,7 +67,8 @@ class TestSuiteRandomizer():
                         config_data,
                         flakiness_category_generators,
                         kind,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'basic_victim_polluter':
@@ -73,7 +77,8 @@ class TestSuiteRandomizer():
                         flakiness_category_generators,
                         kind,
                         config_data,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'basic_brittle_state_setter':
@@ -82,7 +87,8 @@ class TestSuiteRandomizer():
                         flakiness_category_generators,
                         kind,
                         config_data,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'classes_victim_polluter':
@@ -91,7 +97,8 @@ class TestSuiteRandomizer():
                         flakiness_category_generators,
                         kind,
                         config_data,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'classes_brittle_state_setter':
@@ -100,7 +107,8 @@ class TestSuiteRandomizer():
                         flakiness_category_generators,
                         kind,
                         config_data,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'multiple_classes_victim_polluter':
@@ -109,7 +117,8 @@ class TestSuiteRandomizer():
                         config_data,
                         flakiness_category_generators,
                         kind,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
                 if kind == 'task_race_cond':
@@ -118,7 +127,8 @@ class TestSuiteRandomizer():
                         config_data,
                         flakiness_category_generators,
                         kind,
-                        total_test_count
+                        total_test_count,
+                        is_evaluation
                     )
 
     def generate_randomized_test_order_dependent_multiple_classes_victim_polluter_test_suite(
@@ -127,7 +137,8 @@ class TestSuiteRandomizer():
             config_data,
             flakiness_category_generators,
             kind,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
@@ -157,7 +168,7 @@ class TestSuiteRandomizer():
             module_name = f'{category}_{kind}_{module_identifier}'
 
             test_file_writer = TestFileWriter(module_name)
-            class_definition_file_writer = ClassDefinitionFileWriter(module_name)
+            class_definition_file_writer = ClassDefinitionFileWriter(module_name=module_name, is_evaluation=is_evaluation)
             generator = flakiness_category_generators[category][kind]
 
             test_tree = generator.generate_test_tree(
@@ -182,7 +193,8 @@ class TestSuiteRandomizer():
             flakiness_category_generators,
             kind,
             config_data,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
@@ -198,7 +210,7 @@ class TestSuiteRandomizer():
             module_name = f'{category}_{kind}_{class_identifier}'
 
             test_file_writer = TestFileWriter(module_name)
-            class_definition_file_writer = ClassDefinitionFileWriter(module_name)
+            class_definition_file_writer = ClassDefinitionFileWriter(module_name=module_name, is_evaluation=is_evaluation)
             generator = flakiness_category_generators[category][kind]
 
             test_tree = generator.generate_test_tree(
@@ -224,7 +236,8 @@ class TestSuiteRandomizer():
             flakiness_category_generators,
             kind,
             config_data,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
@@ -243,7 +256,7 @@ class TestSuiteRandomizer():
             module_name = f'{category}_{kind}_{class_identifier}'
 
             test_file_writer = TestFileWriter(module_name)
-            class_definition_file_writer = ClassDefinitionFileWriter(module_name)
+            class_definition_file_writer = ClassDefinitionFileWriter(module_name=module_name, is_evaluation=is_evaluation)
             generator = flakiness_category_generators[category][kind]
 
             test_tree = generator.generate_test_tree(
@@ -268,11 +281,12 @@ class TestSuiteRandomizer():
             flakiness_category_generators,
             kind,
             config_data,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         relative_tests_share = config_data[category][kind]['test_number_share']
         # we have to divide by two because becuause for each state to be set there are always 2 tests generated
-        tests_share = int(int(total_test_count * relative_tests_share)/2)
+        tests_share = int(int(total_test_count * relative_tests_share) / 2)
 
         generated_tests = 0
         while generated_tests < tests_share:
@@ -299,7 +313,8 @@ class TestSuiteRandomizer():
             flakiness_category_generators,
             kind,
             config_data,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
@@ -311,7 +326,7 @@ class TestSuiteRandomizer():
             if (generated_tests + number_of_tests) > tests_share:
                 number_of_tests = tests_share - generated_tests
 
-            generated_tests +=  number_of_tests
+            generated_tests += number_of_tests
             file_identifier = uuid.uuid4().hex
 
             test_file_writer = TestFileWriter(module_name=f'{category}_{kind}_{file_identifier}')
@@ -329,7 +344,8 @@ class TestSuiteRandomizer():
             config_data,
             flakiness_category_generators,
             kind,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         max_multiplication_depth = \
             (config_data)['random_api']["combination"]["multiplication"][
@@ -350,9 +366,8 @@ class TestSuiteRandomizer():
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
 
-
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
@@ -419,10 +434,11 @@ class TestSuiteRandomizer():
             config_data,
             flakiness_category_generators,
             kind,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
@@ -455,11 +471,12 @@ class TestSuiteRandomizer():
             config_data,
             flakiness_category_generators,
             kind,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         max_multiplication_depth = \
             (config_data)['random_api']["multiplication"]["max_multiplication_depth"]
@@ -496,11 +513,12 @@ class TestSuiteRandomizer():
             config_data,
             flakiness_category_generators,
             kind,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         test_statements = [ast.Import(names=[ast.alias(f'{category}_{kind}')])]
         test_file_writer = TestFileWriter(module_name=f'{category}_{kind}')
-        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}')
+        function_file_writer = FunctionFileWriter(module_name=f'{category}_{kind}', is_evaluation=is_evaluation)
 
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
@@ -511,7 +529,6 @@ class TestSuiteRandomizer():
             (config_data)['random_api']["summation"]["max_summand"]
         generator = flakiness_category_generators[category][kind]
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
-
 
         for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
@@ -536,7 +553,8 @@ class TestSuiteRandomizer():
             config_data,
             flakiness_category_generators,
             kind,
-            total_test_count
+            total_test_count,
+            is_evaluation
     ):
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
@@ -578,6 +596,6 @@ class TestSuiteRandomizer():
             for kind in flakiness_category_generators[category]:
                 total_test_number_share += config_data[category][kind]['test_number_share']
 
-        if total_test_number_share != 1 :
+        if total_test_number_share != 1:
             print(f'Test number share does not add up to 1, instead: {total_test_number_share}', file=sys.stderr)
             sys.exit()

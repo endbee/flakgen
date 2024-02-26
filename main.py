@@ -13,6 +13,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_file_path")
     parser.add_argument("--with_eval", action="store_true", help="If set, evaluate the test suite")
+    parser.add_argument("--for_charmfl", action="store_true", help="If set, evaluate the test suite")
     args = parser.parse_args()
 
     config_file_path = "config.json"
@@ -24,10 +25,12 @@ def main():
         os.makedirs('tests')
 
     randomizer = TestSuiteRandomizer()
-    randomizer.generate_randomized_test_suite(config_file_path)
+    randomizer.generate_randomized_test_suite(config_file_path, args.for_charmfl)
 
-    evaluate_test_suite()
-
+    if args.with_eval:
+        evaluate_test_suite()
+    elif not args.for_charmfl:
+        run_test_suite()
 
 def cleanup_old_testsuite():
     shutil.rmtree('tests')
