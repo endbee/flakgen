@@ -29,10 +29,9 @@ class TestSuiteRandomizer():
             min_total_test_count, max_total_test_count)
 
         for category in flakiness_category_generators:
-            # Instantiate file writer objects for each category to write them to separate file such that for example all
-            # randomness functions, tests, test order dependent functions and tests are in dedicated file respectively
 
-            # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
+            # generate test and function pairs (called test suites since they can be standalone) and write
+            # them to test.py file for each category: randomness, test order, ...
             for kind in flakiness_category_generators[category]:
                 if kind == 'summation':
                     self.generate_randomized_random_api_summation_test_suite(
@@ -150,6 +149,7 @@ class TestSuiteRandomizer():
         max_class_count = \
             (config_data)['test_order_dependent']["multiple_classes_victim_polluter"][
                 "max_class_count"]
+
         while generated_tests < tests_share:
             module_identifier = uuid.uuid4().hex
 
@@ -163,6 +163,7 @@ class TestSuiteRandomizer():
 
             number_of_tests = random.randint(2, 5)
 
+            # Handle edge case where randomly picked number of tests would lead to generating to many test cases
             if (generated_tests + number_of_tests) > tests_share:
                 number_of_tests = tests_share - generated_tests
 
