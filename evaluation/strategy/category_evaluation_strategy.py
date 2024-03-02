@@ -22,7 +22,7 @@ class CategoryEvaluationStrategy(evaluation.strategy.abstract_evaluation_strateg
             target_file_name_pattern = category_name + '_' + sub_category_name + '_*.py'
             flakiness_category = category_name + '_' + sub_category_name
             category_share = self.get_category_share(config_data, category_name, sub_category_name)
-            result = self.count_functions_in_files(directory_path, target_file_name_pattern)
+            result = self.get_function_count_in_file(directory_path, target_file_name_pattern)
             print(f"Number of functions in {flakiness_category}: {result} target was {total_test_count*category_share}")
 
     def get_categories(self):
@@ -66,29 +66,24 @@ class CategoryEvaluationStrategy(evaluation.strategy.abstract_evaluation_strateg
         }
 
 
-    def count_functions_in_files(self, directory, file_name):
-        # Initialize a counter
-        total_functions = 0
+    def get_function_count_in_file(self, directory, file_name):
+        count = 0
 
-        # Loop through all files in the directory
         for root, dirs, files in os.walk(directory):
             for file in files:
-                # Check if the file name matches the specified name
                 if fnmatch.fnmatch(file, file_name):
-                    file_path = os.path.join(root, file)
+                    path = os.path.join(root, file)
 
-                    # Read the content of the file
-                    with open(file_path, 'r') as f:
-                        file_content = f.read()
+                    # Read file
+                    with open(path, 'r') as file_stream:
+                        content = file_stream.read()
 
-                        # Use a regular expression to count functions
-                        function_pattern = re.compile(r'def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(')
-                        functions_in_file = function_pattern.findall(file_content)
+                        func_regex = re.compile(r'def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(')
+                        functions = func_regex.findall(content)
 
-                        # Update the total count
-                        total_functions += len(functions_in_file)
+                        count += len(functions)
 
-        return total_functions
+        return count
 
     def get_total_test_count(self, report_data):
         return report_data['summary']['collected']
