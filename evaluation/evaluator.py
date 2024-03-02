@@ -1,5 +1,7 @@
 from evaluation.strategy.flakiness_evaluation_strategy import FlakinessEvaluationStrategy
 from evaluation.strategy.category_evaluation_strategy import CategoryEvaluationStrategy
+
+
 class Evaluator:
 
     def __init__(self, evaluation_strategy):
@@ -14,6 +16,7 @@ class Evaluator:
 
     def evaluate(self):
         self._evaluation_strategy.evaluate()
+
 
 def get_evaluators():
     return [

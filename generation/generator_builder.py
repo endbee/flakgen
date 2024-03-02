@@ -13,7 +13,6 @@ import generation.test_order_dependent.multiple_classes_victim_polluter
 import generation.async_wait.task_race_cond
 
 
-
 class GeneratorBuilder:
     # Reads the config file provided in path
     def __init__(self, config_file_path):
@@ -21,7 +20,8 @@ class GeneratorBuilder:
             with open(config_file_path) as config_file:
                 self.config_data = json.load(config_file)
         except OSError as e:
-            print(f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
+            print(
+                f"Unable open file \"{config_file_path}\": {e}", file=sys.stderr)
             sys.exit()
 
     # Builds all implemented generator classes with respective parameters from config file

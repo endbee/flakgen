@@ -29,13 +29,16 @@ class TaskRaceCondGenerator(Generator):
             ),
             ast.Assign(
                 targets=[ast.Name('success_delay')],
-                value=ast.Call(ast.Name('random.choice'), [ast.Name('delays')], []),
+                value=ast.Call(ast.Name('random.choice'),
+                               [ast.Name('delays')], []),
                 type_ignores=[]
             ),
-            ast.Expr(ast.Call(ast.Name('delays.remove'), [ast.Name('success_delay')], [])),
+            ast.Expr(ast.Call(ast.Name('delays.remove'),
+                     [ast.Name('success_delay')], [])),
             ast.Assign(
                 targets=[ast.Name('failure_delay')],
-                value=ast.Call(ast.Name('random.choice'), [ast.Name('delays')], []),
+                value=ast.Call(ast.Name('random.choice'),
+                               [ast.Name('delays')], []),
                 type_ignores=[]
             ),
         ]
@@ -44,7 +47,8 @@ class TaskRaceCondGenerator(Generator):
 
     def generate_success_state_setter_func(self, success_state, function_identifier):
         statements = [
-            ast.Expr(ast.Await(ast.Call(ast.Name('asyncio.sleep'), [ast.Name('success_delay')], []))),
+            ast.Expr(ast.Await(ast.Call(ast.Name('asyncio.sleep'),
+                     [ast.Name('success_delay')], []))),
             ast.Global(['state'])
         ]
 
@@ -67,7 +71,8 @@ class TaskRaceCondGenerator(Generator):
 
     def generate_failure_state_setter_func(self, failure_state, function_identifier):
         statements = [
-            ast.Expr(ast.Await(ast.Call(ast.Name('asyncio.sleep'), [ast.Name('failure_delay')], []))),
+            ast.Expr(ast.Await(ast.Call(ast.Name('asyncio.sleep'),
+                     [ast.Name('failure_delay')], []))),
             ast.Global(['state'])
         ]
 
@@ -99,7 +104,8 @@ class TaskRaceCondGenerator(Generator):
                 targets=[ast.Name('task1')],
                 value=ast.Call(
                     ast.Name('asyncio.create_task'),
-                    [ast.Call(ast.Name('flaky_task_race_cond_set_failure_state_' + function_identifier), [], [])],
+                    [ast.Call(ast.Name(
+                        'flaky_task_race_cond_set_failure_state_' + function_identifier), [], [])],
                     []
                 ),
                 type_ignores=[]
@@ -108,14 +114,16 @@ class TaskRaceCondGenerator(Generator):
                 targets=[ast.Name('task2')],
                 value=ast.Call(
                     ast.Name('asyncio.create_task'),
-                    [ast.Call(ast.Name('flaky_task_race_cond_set_success_state_' + function_identifier), [], [])],
+                    [ast.Call(ast.Name(
+                        'flaky_task_race_cond_set_success_state_' + function_identifier), [], [])],
                     []
                 ),
                 type_ignores=[]
             ),
             ast.Expr(ast.Await(ast.Name('task1'))),
             ast.Expr(ast.Await(ast.Name('task2'))),
-            self.generate_assert_equality_expression(ast.Name('state'), ast.Constant(success_state))
+            self.generate_assert_equality_expression(
+                ast.Name('state'), ast.Constant(success_state))
         ]
 
         return ast.AsyncFunctionDef(

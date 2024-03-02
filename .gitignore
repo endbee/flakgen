@@ -167,3 +167,5 @@ cython_debug/
 
 # test execution report file
 .report.json
+
+outcomes_table.txt

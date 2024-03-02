@@ -16,12 +16,15 @@ class MultipleClassesVictimPolluterTestOrderDependentGenerator(Generator):
 
             state_name = f'member_state_{state_identifier}'
 
-            class_member = ast.Assign(targets=[ast.Name(state_name)], value=ast.Constant('success_state'))
+            class_member = ast.Assign(
+                targets=[ast.Name(state_name)], value=ast.Constant('success_state'))
 
             class_member_setter = ast.FunctionDef(
                 f'set_{state_name}',
-                ast.arguments([], [ast.arg('self'), ast.arg('value')], defaults=[]),
-                [ast.Assign(targets=[ast.Name(f'self.{state_name}')], value=ast.alias('value'))],
+                ast.arguments(
+                    [], [ast.arg('self'), ast.arg('value')], defaults=[]),
+                [ast.Assign(
+                    targets=[ast.Name(f'self.{state_name}')], value=ast.alias('value'))],
                 []
             )
 
@@ -66,14 +69,16 @@ class MultipleClassesVictimPolluterTestOrderDependentGenerator(Generator):
             if i == polluted_test:
                 # when polluter, pollute by setting new value to global variable
                 test_postfix = 'polluter'
-                polluter_statements = self.generate_polluter_statements(class_state_identifiers_map)
+                polluter_statements = self.generate_polluter_statements(
+                    class_state_identifiers_map)
 
                 test_statements.extend(polluter_statements)
 
             else:
                 # when victim, just assert the global variable value to be the initial value
                 test_postfix = 'victim'
-                victim_statements = self.generate_victim_statements(class_state_identifiers_map)
+                victim_statements = self.generate_victim_statements(
+                    class_state_identifiers_map)
 
                 test_statements.extend(victim_statements)
 
@@ -150,7 +155,8 @@ class MultipleClassesVictimPolluterTestOrderDependentGenerator(Generator):
     ):
         class_module_identifier = f'test_order_dependent_multiple_classes_victim_polluter_{module_identifier}_class'
 
-        initializing_statements = [ast.Import(names=[ast.alias(class_module_identifier)])]
+        initializing_statements = [ast.Import(
+            names=[ast.alias(class_module_identifier)])]
 
         for class_identifier in class_state_identifiers_map:
             class_name = f'class_victim_polluter_{class_identifier}'
@@ -162,7 +168,7 @@ class MultipleClassesVictimPolluterTestOrderDependentGenerator(Generator):
                 keywords=[],
             )
             initializing_statements.append(ast.Global([class_name]))
-            initializing_statements.append(ast.Assign(targets=[class_instance], value=class_instance_value,type_ignores=[]))
+            initializing_statements.append(ast.Assign(
+                targets=[class_instance], value=class_instance_value, type_ignores=[]))
 
         return initializing_statements
-
