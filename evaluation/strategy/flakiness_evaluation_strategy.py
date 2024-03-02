@@ -42,9 +42,8 @@ class FlakinessEvaluationStrategy(evaluation.strategy.abstract_evaluation_strate
         print(count)
 
     def check_passed_failed_presence(self, arr):
-        # Check if both "passed" and "failed" are present in the array
-        passed_present = "passed" in arr
-        failed_present = "failed" in arr
+        passed_test_exist = "passed" in arr
+        failed_test_exist = "failed" in arr
 
         # Return True if both are present, otherwise False
-        return passed_present and failed_present
+        return passed_test_exist and failed_test_exist
