@@ -3,7 +3,7 @@ import ast
 from generation.generator import Generator
 
 
-# Contains all generator classes that generate flaky function and test case pairs (of different kinds) due to randomness
+# Base generator class for all classes that generate flaky function and test case pairs (of different kinds) due to randomness
 class RandomApiGenerator(Generator):
 
     # Generates function call like 'numpy.random.random()'

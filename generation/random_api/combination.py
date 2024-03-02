@@ -27,6 +27,7 @@ class RandomApiCombinationGenerator(RandomApiGenerator):
     ):
         statements = []
 
+        # Generate flaky function with respective generator class using the concerned parameters
         if isinstance(generator, MultiplicationGenerator):
             flaky_function = generator.generate_flaky_function_tree(
                 multiplication_depth,

@@ -26,10 +26,9 @@ class TestSuiteRandomizer():
         total_test_count = random.randint(min_total_test_count, max_total_test_count)
 
         for category in flakiness_category_generators:
-            # Instantiate file writer objects for each category to write them to separate file such that for example all
-            # randomness functions, tests, test order dependent functions and tests are in dedicated file respectively
 
-            # generate test and function pairs and write them to test.py file for each category: randomness, test order, ...
+            # generate test and function pairs (called test_suites in following, since they can be standalone)
+            # and write them to test.py file for each category: randomness, test order, ...
             for kind in flakiness_category_generators[category]:
                 if kind == 'summation':
                     self.generate_randomized_random_api_summation_test_suite(
@@ -136,6 +135,8 @@ class TestSuiteRandomizer():
         max_class_count = \
             (config_data)['test_order_dependent']["multiple_classes_victim_polluter"][
                 "max_class_count"]
+
+        # Ensure that the correct number of tests is generated
         while generated_tests < tests_share:
             module_identifier = uuid.uuid4().hex
 
@@ -149,6 +150,8 @@ class TestSuiteRandomizer():
 
             number_of_tests = random.randint(2, 5)
 
+            # Handle test number edge case where randomly picked test count would lead to generating more test cases
+            # as intended
             if (generated_tests + number_of_tests) > tests_share:
                 number_of_tests = tests_share - generated_tests
 
@@ -188,6 +191,8 @@ class TestSuiteRandomizer():
         tests_share = int(total_test_count * relative_tests_share)
 
         generated_tests = 0
+
+        # Ensure that the correct number of tests is generated
         while generated_tests < tests_share:
             class_identifier = uuid.uuid4().hex
             state_identifier = random.choice(string.ascii_lowercase)
@@ -230,6 +235,8 @@ class TestSuiteRandomizer():
         tests_share = int(total_test_count * relative_tests_share)
 
         generated_tests = 0
+
+        # Ensure that the correct number of tests is generated
         while generated_tests < tests_share:
             class_identifier = uuid.uuid4().hex
             state_identifier = random.choice(string.ascii_lowercase)
@@ -275,6 +282,8 @@ class TestSuiteRandomizer():
         tests_share = int(int(total_test_count * relative_tests_share)/2)
 
         generated_tests = 0
+
+        # Ensure that the correct number of tests is generated
         while generated_tests < tests_share:
             number_of_tests = random.randint(2, 5)
 
@@ -305,6 +314,8 @@ class TestSuiteRandomizer():
         tests_share = int(total_test_count * relative_tests_share)
 
         generated_tests = 0
+
+        # Ensure that the correct number of tests is generated
         while generated_tests < tests_share:
             number_of_tests = random.randint(2, 5)
 
@@ -359,6 +370,7 @@ class TestSuiteRandomizer():
 
         generator = flakiness_category_generators[category][kind]
 
+        # Ensure that the correct number of tests is generated
         for n in range(tests_share):
             number_of_assertions = random.randint(1, max_number_of_assertions)
             function_identifier = uuid.uuid4().hex
@@ -434,6 +446,7 @@ class TestSuiteRandomizer():
         relative_tests_share = config_data[category][kind]['test_number_share']
         tests_share = int(total_test_count * relative_tests_share)
 
+        # Ensure that the correct number of tests is generated
         for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
             expression_count = random.randint(1, max_expression_count)
@@ -471,6 +484,7 @@ class TestSuiteRandomizer():
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
         generator = flakiness_category_generators[category][kind]
 
+        # Ensure that the correct number of tests is generated
         for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
             multiplication_depth = random.randint(1, max_multiplication_depth)
@@ -512,7 +526,7 @@ class TestSuiteRandomizer():
         generator = flakiness_category_generators[category][kind]
         function_statements = [ast.Import(names=[ast.alias('numpy')])]
 
-
+        # Ensure that the correct number of tests is generated
         for i in range(tests_share):
             function_identifier = uuid.uuid4().hex
             summation_depth = random.randint(1, max_summation_depth)
@@ -543,6 +557,7 @@ class TestSuiteRandomizer():
 
         generator = flakiness_category_generators[category][kind]
 
+        # Ensure that the correct number of tests is generated
         for i in range(tests_share):
             test_statements = []
 
